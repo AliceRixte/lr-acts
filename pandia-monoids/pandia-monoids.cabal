@@ -1,0 +1,137 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.37.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           pandia-monoids
+version:        0.0.0
+description:    Please see the README on GitHub at <https://github.com/AliceRixte/pandia-monoids#readme>
+homepage:       https://github.com/AliceRixte/pandia-monoids#readme
+bug-reports:    https://github.com/AliceRixte/pandia-monoids/issues
+author:         Alice Rixte
+maintainer:     alice.rixte@u-bordeaux.fr
+copyright:      BSD3
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+tested-with:
+    GHC ==9.8.2
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/AliceRixte/pandia-monoids
+
+library
+  exposed-modules:
+      Data.Act
+      Data.Semigroup.Semidirect
+      Data.Semigroup.Semidirect.Lazy
+      Data.Shiftable
+      Test
+  other-modules:
+      Paths_pandia_monoids
+  hs-source-dirs:
+      src
+  default-extensions:
+      GeneralizedNewtypeDeriving
+      FunctionalDependencies
+      MultiParamTypeClasses
+      FlexibleContexts
+      FlexibleInstances
+      StandaloneDeriving
+      ScopedTypeVariables
+      UndecidableInstances
+      MonoLocalBinds
+      DataKinds
+      TypeOperators
+      TypeFamilies
+      OverloadedLabels
+  ghc-options: -Wall -threaded -O2 -fprint-potential-instances
+  build-depends:
+      base >=4.18 && <5
+    , comonad >=5.0.8
+    , constraints >=0.14
+    , containers >=0.6
+    , extensible >=0.9
+    , generic-lens >=2.2.2.0
+    , groups >=0.5
+    , lens >=5.2.3
+    , membership >=0.0.1
+    , profunctors >=5.6.2
+  default-language: Haskell2010
+
+test-suite pandia-monoids-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_pandia_monoids
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -threaded -O0 -rtsopts -with-rtsopts=-N
+  build-depends:
+      QuickCheck >=2.14.3
+    , base >=4.18 && <5
+    , comonad >=5.0.8
+    , constraints >=0.14
+    , containers >=0.6
+    , extensible >=0.9
+    , generic-lens >=2.2.2.0
+    , groups >=0.5
+    , hspec >=2.11
+    , lens >=5.2.3
+    , membership >=0.0.1
+    , pandia-monoids
+    , profunctors >=5.6.2
+  default-language: Haskell2010
+
+benchmark monoid-list
+  type: exitcode-stdio-1.0
+  main-is: monoid-list.hs
+  other-modules:
+      Main
+      Paths_pandia_monoids
+  hs-source-dirs:
+      benchmark
+  ghc-options: -Wall -threaded -O2 -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.18 && <5
+    , comonad >=5.0.8
+    , constraints >=0.14
+    , containers >=0.6
+    , criterion >=1.6
+    , extensible >=0.9
+    , generic-lens >=2.2.2.0
+    , groups >=0.5
+    , lens >=5.2.3
+    , membership >=0.0.1
+    , monoid-extras
+    , pandia-monoids
+    , profunctors >=5.6.2
+  default-language: Haskell2010
+
+benchmark pandia-monoids-bench
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
+      Paths_pandia_monoids
+  hs-source-dirs:
+      benchmark
+  ghc-options: -Wall -threaded -O2 -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.18 && <5
+    , comonad >=5.0.8
+    , constraints >=0.14
+    , containers >=0.6
+    , criterion >=1.6
+    , extensible >=0.9
+    , generic-lens >=2.2.2.0
+    , groups >=0.5
+    , lens >=5.2.3
+    , membership >=0.0.1
+    , pandia-monoids
+    , profunctors >=5.6.2
+  default-language: Haskell2010

@@ -1,0 +1,95 @@
+name:                pandia-monoids
+version:             0.0.0
+github:              "AliceRixte/pandia-monoids"
+license:             BSD3
+author:              "Alice Rixte"
+maintainer:          "alice.rixte@u-bordeaux.fr"
+copyright:           "BSD3"
+
+extra-source-files:
+- README.md
+- CHANGELOG.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            media
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/AliceRixte/pandia-monoids#readme>
+
+dependencies:
+- base >= 4.18 && < 5
+- groups >= 0.5
+
+- lens >= 5.2.3
+- generic-lens >= 2.2.2.0
+- containers >= 0.6
+- extensible >= 0.9
+- membership >= 0.0.1
+- constraints >= 0.14
+- profunctors >= 5.6.2
+- comonad >= 5.0.8
+
+ghc-options:
+  - -Wall
+  - -threaded
+
+tested-with: GHC ==9.8.2
+
+library:
+  ghc-options:
+  - -O2
+  - -fprint-potential-instances
+  default-extensions:
+  - GeneralizedNewtypeDeriving
+  - FunctionalDependencies
+  - MultiParamTypeClasses
+  - FlexibleContexts
+  - FlexibleInstances
+  - StandaloneDeriving
+  - ScopedTypeVariables
+  - UndecidableInstances
+  - MonoLocalBinds
+  - DataKinds
+  - TypeOperators
+  - TypeFamilies
+  - OverloadedLabels
+  source-dirs: src
+
+tests:
+  pandia-monoids-test:
+    main:                Spec.hs
+    dependencies:
+    - pandia-monoids
+    - hspec >= 2.11
+    - QuickCheck >= 2.14.3
+    source-dirs:         test
+    ghc-options:
+      - -O0
+      - -rtsopts
+      - -with-rtsopts=-N
+
+benchmarks:
+  pandia-monoids-bench:
+    main: Main.hs
+    dependencies:
+      - pandia-monoids
+      - criterion >= 1.6
+    source-dirs: benchmark
+    ghc-options:
+      - -O2
+      - -rtsopts
+      - -with-rtsopts=-N
+  monoid-list:
+    main: monoid-list.hs
+    dependencies:
+      - pandia-monoids
+      - monoid-extras
+      - criterion >= 1.6
+    source-dirs: benchmark
+    ghc-options:
+      - -O2
+      - -rtsopts
+      - -with-rtsopts=-N
