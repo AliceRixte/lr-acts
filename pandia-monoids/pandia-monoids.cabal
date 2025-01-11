@@ -6,9 +6,9 @@ cabal-version: 1.12
 
 name:           pandia-monoids
 version:        0.0.0
-description:    Please see the README on GitHub at <https://github.com/AliceRixte/pandia-monoids#readme>
-homepage:       https://github.com/AliceRixte/pandia-monoids#readme
-bug-reports:    https://github.com/AliceRixte/pandia-monoids/issues
+description:    Please see the README on GitHub at <https://github.com/AliceRixte/pandia/blob/main/pandia-monoids#readme>
+homepage:       https://github.com/AliceRixte/pandia#readme
+bug-reports:    https://github.com/AliceRixte/pandia/issues
 author:         Alice Rixte
 maintainer:     alice.rixte@u-bordeaux.fr
 copyright:      BSD3
@@ -23,7 +23,8 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/AliceRixte/pandia-monoids
+  location: https://github.com/AliceRixte/pandia
+  subdir: pandia-monoids
 
 library
   exposed-modules:

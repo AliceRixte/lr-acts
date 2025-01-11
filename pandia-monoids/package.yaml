@@ -1,6 +1,6 @@
 name:                pandia-monoids
 version:             0.0.0
-github:              "AliceRixte/pandia-monoids"
+github:              "AliceRixte/pandia/pandia-monoids"
 license:             BSD3
 author:              "Alice Rixte"
 maintainer:          "alice.rixte@u-bordeaux.fr"
@@ -17,7 +17,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/AliceRixte/pandia-monoids#readme>
+description:         Please see the README on GitHub at <https://github.com/AliceRixte/pandia/blob/main/pandia-monoids#readme>
 
 dependencies:
 - base >= 4.18 && < 5
