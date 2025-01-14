@@ -42,6 +42,8 @@ import Data.Functor.Identity
 
 import Data.Coerce
 
+import Linear
+
 
 -- | A left action of a set @s@ on another set @x@ is a function that maps
 -- elements of @s@ to functions on @x@.
@@ -243,3 +245,24 @@ instance LAct x (First x) where
   {-# INLINE (<>$) #-}
 
 
+---------------------------- Instances for Linear ----------------------------
+
+-- | Action by morphism of monoids
+instance Semigroup a => LAct (V1 a) (V1 a) where
+  (<>$) = (<>)
+  {-# INLINE (<>$) #-}
+
+-- | Action by morphism of monoids
+instance Semigroup a => LAct (V2 a) (V2 a) where
+  (<>$) = (<>)
+  {-# INLINE (<>$) #-}
+
+-- | Action by morphism of monoids
+instance Semigroup a => LAct (V3 a) (V3 a) where
+  (<>$) = (<>)
+  {-# INLINE (<>$) #-}
+
+-- | Action by morphism of monoids
+instance Semigroup a => LAct (V4 a) (V4 a) where
+  (<>$) = (<>)
+  {-# INLINE (<>$) #-}

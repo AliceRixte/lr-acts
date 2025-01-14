@@ -38,6 +38,7 @@ import Data.Functor.Identity
 import Data.Coerce
 
 import Data.Act
+import Linear as Lin
 
 ------------------------------------ Origin ------------------------------------
 
@@ -61,6 +62,7 @@ instance Origin x => Origin (Identity x) where
   {-# INLINE origin #-}
 
 ------------------------------------ Shift -------------------------------------
+
 class (LAct s (Shift s), Semigroup (Shift s)) => Shiftable s where
   type Shift s
   shift :: s -> Shift s
@@ -78,4 +80,24 @@ instance Num x => Shiftable (Product x) where
 instance Shiftable x => Shiftable (Identity x) where
   type Shift (Identity x) = Identity (Shift x)
   shift = coerce . shift
+  {-# INLINE shift #-}
+
+instance Semigroup a => Shiftable (V1 a) where
+  type Shift (V1 a) = V1 a
+  shift = id
+  {-# INLINE shift #-}
+
+instance Semigroup a => Shiftable (V2 a) where
+  type Shift (V2 a) = V2 a
+  shift = id
+  {-# INLINE shift #-}
+
+instance Semigroup a => Shiftable (V3 a) where
+  type Shift (V3 a) = V3 a
+  shift = id
+  {-# INLINE shift #-}
+
+instance Semigroup a => Shiftable (V4 a) where
+  type Shift (V4 a) = V4 a
+  shift = id
   {-# INLINE shift #-}
