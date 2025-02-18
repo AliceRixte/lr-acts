@@ -31,7 +31,6 @@ library
       Data.Act
       Data.Semigroup.Semidirect
       Data.Semigroup.Semidirect.Lazy
-      Data.Semigroup.Zero
       Data.Shiftable
       Test
   other-modules:
