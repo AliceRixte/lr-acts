@@ -283,6 +283,17 @@ instance RAct x s => RAct (Identity x) (Identity s) where
 
 ------------------------- Instances for Data.Semigroup -------------------------
 
+-- | Same action property
+instance LAct x s => RAct x (Dual s) where
+  x $<> Dual s = s <>$ x
+  {-# INLINE ($<>) #-}
+
+-- | Same action property
+instance RAct x s => LAct x (Dual s) where
+  Dual s <>$ x = x $<> s
+  {-# INLINE (<>$) #-}
+
+
 -- | Monoid action
 instance Num x => LAct x (Sum x) where
   (<>$) s = coerce (s <>)
