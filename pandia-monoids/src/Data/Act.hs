@@ -3,6 +3,7 @@
 {-# LANGUAGE DerivingVia                #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
+{-# LANGUAGE ConstraintKinds            #-}
 
 --------------------------------------------------------------------------------
 -- |
@@ -82,11 +83,13 @@ module Data.Act
   , LActSg
   , LActMn
   , LActSgMorph
+  , LActNeutral
   , LActMnMorph
   , RAct (..)
   , RActSg
   , RActMn
   , RActSgMorph
+  , RActNeutral
   , RActMnMorph
   , ActSelf (..)
   , ActId (..)
@@ -161,22 +164,28 @@ class (LActSg x s, Monoid s) => LActMn x s
 
 -- | A left action by morphism of semigroups
 --
--- In addition to the laws of @'LActSg' x s@, instances must satisfy the following
--- law :
+-- In addition to the laws of @'LActSg' x s@, instances must satisfy the
+-- following law :
 --
 -- @ s <>$ (x <> y) == (s <>$ x) <> (s <>$ y) @
 --
+-- In other words, @(s <>$)@ is a morphism of semigroups.
+--
 class (LActSg x s, Semigroup x) => LActSgMorph x s
 
--- | A left action by morphism of monoids
+-- | A left action on a monoid that preserves its neutral element.
 --
--- In addition to the laws of @'LActMn' x s@ and @'LActSgMorph' x s@ and
--- @'Monoid' x@, instances must be unitary actions, meaning they must satisfy
--- the following law () :
+-- Instances must satisfy the following law :
 --
--- @ s <>$ mempty == mempty @
+-- @ s <>$ 'mempty' == 'mempty' @
 --
-class (LActMn x s, LActSgMorph x s, Monoid x) => LActMnMorph x s
+class (LAct x s, Monoid x) => LActNeutral x s
+
+-- | A left action by morphism of monoids i.e. such that
+--
+-- @(s <>$)@ is a morphism of monoids
+--
+type LActMnMorph x s = (LActMn x s, LActSgMorph x s, LActNeutral x s)
 
 
 -- | A right action of a set @s@ on another set @x@.
@@ -220,17 +229,24 @@ class (RActSg x s, Monoid s) => RActMn x s
 --
 -- @ (x <> y) $<> s == x $<> (y $<> s) @
 --
+-- In other words, @($<> s)@ is a morphism of semigroups.
+--
 class (RActSg x s, Semigroup x) => RActSgMorph x s
 
--- | A right action by morphism of monoids
+
+-- | A right action on a monoid that preserves its neutral element.
 --
--- In addition to the laws of @'RActMn' x s@ and @'RActSgMorph' x s@ and
--- @'Monoid' x@, instances must be unitary actions, meaning they must satisfy
--- the following law () :
+-- Instances must satisfy the following law :
 --
--- @ mempty $<> s == mempty @
+-- @ x $<> mempty == x @
 --
-class (RActMn x s, RActSgMorph x s, Monoid x) => RActMnMorph x s
+class (RAct x s, Monoid x) => RActNeutral x s
+
+-- | A right action by morphism of monoids i.e. such that
+--
+-- @($<> s)@ is a morphism of monoids
+--
+type RActMnMorph x s = (RActMn x s, RActSgMorph x s, RActNeutral x s)
 
 
 
@@ -316,7 +332,7 @@ instance LAct x (ActId s) where
 instance Semigroup s => LActSg x (ActId s)
 instance Monoid s => LActMn x (ActId s)
 instance (Semigroup s, Semigroup x) => LActSgMorph x (ActId s)
-instance (Monoid s, Monoid x) => LActMnMorph x (ActId s)
+instance Monoid x => LActNeutral x (ActId s)
 
 -- | Action by morphism of monoids when @'Monoid' s@ and @'Monoid' x@
 instance RAct x (ActId s) where
@@ -326,7 +342,7 @@ instance RAct x (ActId s) where
 instance Semigroup s => RActSg x (ActId s)
 instance Monoid s => RActMn x (ActId s)
 instance (Semigroup s, Semigroup x) => RActSgMorph x (ActId s)
-instance (Monoid s, Monoid x) => RActMnMorph x (ActId s)
+instance (Monoid s, Monoid x) => RActNeutral x (ActId s)
 
 -- | An action on any functor that uses the @fmap@ function. For example :
 --
@@ -347,13 +363,15 @@ instance (LActMn x s, Functor f) => LActMn (f x) (ActMap s)
 
 -- | Preserves the semigroup (resp. monoid) property of @'LAct' x s@, but
 -- __not__ the morphism properties, which depend on potential @'Semigroup'@
--- (resp. @'Monoid'@) instances of @f x@
+-- (resp. @'Monoid'@) instances of @f x@. When $f = []@, this is an action by morphism of monoids.
 instance (RAct x s, Functor f) => RAct (f x) (ActMap s) where
   x $<> ActMap s = fmap ($<> s) x
   {-# INLINE ($<>) #-}
 
 instance (RActSg x s, Functor f) => RActSg (f x) (ActMap s)
 instance (RActMn x s, Functor f) => RActMn (f x) (ActMap s)
+instance RActSg x s => RActSgMorph [x] (ActMap s)
+instance RActMn x s => RActNeutral [x] (ActMap s)
 
 -- | An action @(<>$)@ can be feeded as an operator for the @'foldr'@ function,
 -- allowing to lift any action to some @'Foldable'@ container. For example :
@@ -367,6 +385,8 @@ newtype ActFold s = ActFold {unactFold :: s}
 instance (Foldable f, LAct x s) => LAct x (ActFold (f s)) where
   ActFold f <>$ x = foldr (<>$) x f
   {-# INLINE (<>$) #-}
+
+instance LAct x s => LActSg x (ActFold [s])
 
 -- | When used with lists @[]@, this is a monoid action
 instance (Foldable f, RAct x s) => RAct x (ActFold (f s)) where
@@ -384,7 +404,7 @@ instance LAct x () where
 instance LActSg x ()
 instance LActMn x ()
 instance Semigroup x => LActSgMorph x ()
-instance Monoid x => LActMnMorph x ()
+instance Monoid x => LActNeutral x ()
 
 -- | Monoid action
 instance RAct x () where
@@ -394,7 +414,7 @@ instance RAct x () where
 instance RActSg x ()
 instance RActMn x ()
 instance Semigroup x => RActSgMorph x ()
-instance Monoid x => RActMnMorph x ()
+instance Monoid x => RActNeutral x ()
 
 -- |  Action by morphism of semigroups (resp. monoids) when @'Semigroup' s@
 -- (resp. @'Monoid' s@)
@@ -405,7 +425,7 @@ instance {-# INCOHERENT #-} LAct () s where
 instance {-# INCOHERENT #-} Semigroup s =>LActSg () s
 instance {-# INCOHERENT #-} Monoid s =>  LActMn () s
 instance {-# INCOHERENT #-} Semigroup s => LActSgMorph () s
-instance {-# INCOHERENT #-} Monoid s => LActMnMorph () s
+instance {-# INCOHERENT #-} LActNeutral () s
 
 -- |  Action by morphism of semigroups (resp. monoids) when @'Semigroup' s@
 -- (resp. @'Monoid' s@)
@@ -416,7 +436,7 @@ instance {-# INCOHERENT #-} RAct () s where
 instance {-# INCOHERENT #-} Semigroup s => RActSg () s
 instance {-# INCOHERENT #-} Monoid s => RActMn () s
 instance {-# INCOHERENT #-} Semigroup s => RActSgMorph () s
-instance {-# INCOHERENT #-} Monoid s => RActMnMorph () s
+instance {-# INCOHERENT #-} RActNeutral () s
 
 -- | Monoid action when @'LAct' x s@ is a semigroup action.
 instance LAct x s => LAct x (Maybe s) where
@@ -442,7 +462,7 @@ instance (LAct x1 s1, LAct x2 s2) => LAct (x1, x2) (s1, s2) where
 instance (LActSg x1 s1, LActSg x2 s2) => LActSg (x1, x2) (s1, s2)
 instance (LActMn x1 s1, LActMn x2 s2) => LActMn (x1, x2) (s1, s2)
 instance (LActSgMorph x1 s1, LActSgMorph x2 s2) => LActSgMorph (x1, x2) (s1, s2)
-instance (LActMnMorph x1 s1, LActMnMorph x2 s2) => LActMnMorph (x1, x2) (s1, s2)
+instance (LActNeutral x1 s1, LActNeutral x2 s2) => LActNeutral (x1, x2) (s1, s2)
 
 -- | Same action propety as the weaker properties of @('LAct' x1 s1, 'LAct' x2
 -- s2)@
@@ -452,7 +472,7 @@ instance (RAct x1 s1, RAct x2 s2) => RAct (x1, x2) (s1, s2) where
 instance (RActSg x1 s1, RActSg x2 s2) => RActSg (x1, x2) (s1, s2)
 instance (RActMn x1 s1, RActMn x2 s2) => RActMn (x1, x2) (s1, s2)
 instance (RActSgMorph x1 s1, RActSgMorph x2 s2) => RActSgMorph (x1, x2) (s1, s2)
-instance (RActMnMorph x1 s1, RActMnMorph x2 s2) => RActMnMorph (x1, x2) (s1, s2)
+instance (RActNeutral x1 s1, RActNeutral x2 s2) => RActNeutral (x1, x2) (s1, s2)
 
 -- | No additionnal properties. In particular this is _not_ a semigroup action.
 instance (LAct x s, LAct x t) => LAct x (Either s t) where
@@ -474,7 +494,7 @@ instance LAct x s => LAct (Identity x) (Identity s) where
 instance LActSg x s => LActSg (Identity x) (Identity s)
 instance LActMn x s => LActMn (Identity x) (Identity s)
 instance LActSgMorph x s => LActSgMorph (Identity x) (Identity s)
-instance LActMnMorph x s => LActMnMorph (Identity x) (Identity s)
+instance LActNeutral x s => LActNeutral (Identity x) (Identity s)
 
 -- | Preserves action properties of @'LAct' x s@.
 instance RAct x s => RAct (Identity x) (Identity s) where
@@ -483,7 +503,7 @@ instance RAct x s => RAct (Identity x) (Identity s) where
 instance RActSg x s => RActSg (Identity x) (Identity s)
 instance RActMn x s => RActMn (Identity x) (Identity s)
 instance RActSgMorph x s => RActSgMorph (Identity x) (Identity s)
-instance RActMnMorph x s => RActMnMorph (Identity x) (Identity s)
+instance RActNeutral x s => RActNeutral (Identity x) (Identity s)
 
 ------------------------- Instances for Data.Semigroup -------------------------
 
@@ -495,7 +515,7 @@ instance LAct x s => RAct x (Dual s) where
 instance LActSg x s => RActSg x (Dual s)
 instance LActMn x s => RActMn x (Dual s)
 instance LActSgMorph x s => RActSgMorph x (Dual s)
-instance LActMnMorph x s => RActMnMorph x (Dual s)
+instance LActNeutral x s => RActNeutral x (Dual s)
 
 -- | Preserves action properties of @'LAct' x s@.
 instance RAct x s => LAct x (Dual s) where
@@ -505,7 +525,7 @@ instance RAct x s => LAct x (Dual s) where
 instance RActSg x s => LActSg x (Dual s)
 instance RActMn x s => LActMn x (Dual s)
 instance RActSgMorph x s => LActSgMorph x (Dual s)
-instance RActMnMorph x s => LActMnMorph x (Dual s)
+instance RActNeutral x s => LActNeutral x (Dual s)
 
 -- | Monoid action
 instance Num x => LAct x (Sum x) where
@@ -579,7 +599,7 @@ instance Num x => LAct (Sum x) (Product x) where
 instance Num x => LActSg (Sum x) (Product x)
 instance Num x => LActMn (Sum x) (Product x)
 instance Num x => LActSgMorph (Sum x) (Product x)
-instance Num x => LActMnMorph (Sum x) (Product x)
+instance Num x => LActNeutral (Sum x) (Product x)
 
 -- | Action by morphism of monoids
 instance Num x => RAct (Sum x) (Product x) where
@@ -589,7 +609,7 @@ instance Num x => RAct (Sum x) (Product x) where
 instance Num x => RActSg (Sum x) (Product x)
 instance Num x => RActMn (Sum x) (Product x)
 instance Num x => RActSgMorph (Sum x) (Product x)
-instance Num x => RActMnMorph (Sum x) (Product x)
+instance Num x => RActNeutral (Sum x) (Product x)
 
 -- | Monoid action
 instance LAct Bool Any where
