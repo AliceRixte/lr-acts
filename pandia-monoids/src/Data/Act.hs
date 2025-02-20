@@ -36,8 +36,9 @@
 --
 -- newtype Time = Time Float
 --
--- newtype Duration = Duration Time deriving ('Semigroup', 'Monoid') via ('Sum'
--- Float) deriving ('LAct' Time, 'RAct' Time) via ('ActCoerce' ('Sum' Float))
+-- newtype Duration = Duration Time
+--   deriving ('Semigroup', 'Monoid') via ('Sum' Float)
+--   deriving ('LAct' Time, 'RAct' Time) via ('ActCoerce' ('Sum' Float))
 -- @
 --
 -- @
