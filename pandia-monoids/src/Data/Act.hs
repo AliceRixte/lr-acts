@@ -3,6 +3,7 @@
 {-# LANGUAGE DerivingVia                #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
+{-# LANGUAGE ConstraintKinds            #-}
 
 --------------------------------------------------------------------------------
 -- |
@@ -30,7 +31,15 @@
 
 module Data.Act
   ( LAct (..)
+  , LActSg
+  , LActMn
+  , LActSgMorph
+  , LActMnMorph
   , RAct (..)
+  , RActSg
+  , RActMn
+  , RActSgMorph
+  , RActMnMorph
   , ActSelf (..)
   , ActId (..)
   , ActMap (..)
@@ -87,6 +96,50 @@ class LAct x s where
   {-# INLINE (<>$) #-}
   infixr 7 <>$
 
+-- | A left semigroup action
+--
+-- Instances must satisfy the following law :
+--
+-- @ (s <> t) <>$ x == s <>$ (t <>$ x) @
+--
+class (LAct x s, Semigroup s) => LActSg x s
+
+-- | A left monoid action
+--
+-- In addition to the laws of @'LActSg'@, instances must satisfy the following
+-- law :
+--
+-- @ 'mempty' <>$ x == x @
+--
+class (LActSg x s, Monoid s) => LActMn x s
+
+-- | A left action by morphism of semigroups
+--
+-- In addition to the laws of @'LActSg'@, instances must satisfy the following
+-- law :
+--
+-- @ s <>$ (x <> y) == (s <>$ x) <> (s <>$ y) @
+--
+class (LActSg x s, Semigroup x) => LActSgMorph x s
+
+-- | A left monoid action by morphism
+--
+-- The laws inherited from @'LActMn' x s@ and @'LActSgMorph' x s@ and @'Monoid' x@ are enough to derive the following equality, which shows that
+--
+-- [Proof]
+--
+-- Let @x : X@. Let's prove that @s <>$ mempty@ is a neutral element.
+--
+-- @
+-- (s <>$ mempty) <> (s <>$ x) == s <>$ (mempty <> x) = s <>$ x
+-- (s <>$ x) <> (s <>$ mempty) == s <>$ (x <> mempty) = s <>$ x
+-- @
+--
+-- Consequently, @s <>$ mempty@ is a neutral element for @<>@. But there can
+-- only be one neutral element in a monoid. So @s <>$ mempty == mempty@.
+--
+type LActMnMorph x s = (LActMn x s, LActSgMorph s x, Monoid x)
+
 
 -- | A right action of a set @s@ on another set @x@.
 --
@@ -104,6 +157,16 @@ class RAct x s where
   {-# INLINE ($<>) #-}
   infixl 7 $<>
 
+class (RAct x s, Semigroup s) => RActSg x s
+class (RActSg x s, Monoid s) => RActMn x s
+class (RActSg x s, Semigroup x) => RActSgMorph x s
+
+
+-- | A right monoid action by morphism
+--
+type RActMnMorph x s = (RActMn x s, RActSgMorph s x, Monoid x)
+
+
 
 ------------------------------- Newtype actions --------------------------------
 
@@ -120,11 +183,16 @@ instance Semigroup s => LAct s (ActSelf s) where
   ActSelf s <>$ x = s <> x
   {-# INLINE (<>$) #-}
 
+instance Semigroup s => LActSg s (ActSelf s)
+instance Monoid s => LActMn s (ActSelf s)
+
 -- | Semigroup action (monoid action when @Monoid s@)
 instance Semigroup s => RAct s (ActSelf s) where
   x $<> ActSelf s = x <> s
   {-# INLINE ($<>) #-}
 
+instance Semigroup s => RActSg s (ActSelf s)
+instance Monoid s => RActMn s (ActSelf s)
 
 -- | Actions of @ActCoerce@ behave similarly to those of @'ActSelf'@, but first
 -- try to coerce @x@ to @s@ before using the @Semigroup@ instance. If @x@ can be
@@ -154,12 +222,18 @@ instance {-# OVERLAPPABLE #-} (Semigroup s, Coercible x s)
   ActCoerce s <>$ x = coerce $ s <> (coerce x :: s)
   {-# INLINE (<>$) #-}
 
+instance (Coercible x s, Semigroup s) => LActSg x (ActCoerce s)
+instance (Coercible x s, Monoid s) => LActMn x (ActCoerce s)
+
 
 -- | Semigroup action (monoid action when @Monoid s@)
 instance {-# OVERLAPPABLE #-} (Semigroup s, Coercible x s)
   => RAct x (ActCoerce s) where
   x $<> ActCoerce s = coerce $ (coerce x :: s) <> s
   {-# INLINE ($<>) #-}
+
+instance (Coercible x s, Semigroup s) => RActSg x (ActCoerce s)
+instance (Coercible x s, Monoid s) => RActMn x (ActCoerce s)
 
 -- | The trivial action where any element of @s@ acts as the identity function
 -- on @x@
@@ -172,10 +246,17 @@ instance LAct x (ActId s) where
   (<>$) _ = id
   {-# INLINE (<>$) #-}
 
+instance Semigroup s => LActSg x (ActId s)
+instance Monoid s => LActMn x (ActId s)
+instance (Semigroup s, Semigroup x) => LActSgMorph x (ActId s)
+
 -- | Action by morphism of monoids  when @'Monoid' s@ and @'Monoid' x@
 instance RAct x (ActId s) where
   x $<> _ = x
   {-# INLINE ($<>) #-}
+
+instance Semigroup s => RActSg x (ActId s)
+instance Monoid s => RActMn x (ActId s)
 
 -- | An action on any functor that uses the @fmap@ function. For example :
 --
@@ -191,12 +272,18 @@ instance (LAct x s, Functor f) => LAct (f x) (ActMap s) where
   ActMap s <>$ x = fmap (s <>$) x
   {-# INLINE (<>$) #-}
 
+instance (LActSg x s, Functor f) => LActSg (f x) (ActMap s)
+instance (LActMn x s, Functor f) => LActMn (f x) (ActMap s)
+
 -- | Preserves the semigroup (resp. monoid) property of @'LAct' x s@, but
 -- __not__ the morphism properties, which depend on potential @'Semigroup'@
 -- (resp. @'Monoid'@) instances of @f x@
 instance (RAct x s, Functor f) => RAct (f x) (ActMap s) where
   x $<> ActMap s = fmap ($<> s) x
   {-# INLINE ($<>) #-}
+
+instance (RActSg x s, Functor f) => RActSg (f x) (ActMap s)
+instance (RActMn x s, Functor f) => RActMn (f x) (ActMap s)
 
 -- | An action @(<>$)@ can be feeded as an operator for the @'foldr'@ function,
 -- allowing to lift any action to some @'Foldable'@ container. For example :
@@ -219,13 +306,17 @@ instance (Foldable f, RAct x s) => RAct x (ActFold (f s)) where
 
 ---------------------------------- Instances -----------------------------------
 
--- | Monoid action
-instance LAct s () where
+-- | Action by morphism of monoids
+instance LAct x () where
   () <>$ x = x
   {-# INLINE (<>$) #-}
 
+instance LActSg x ()
+instance LActMn x ()
+instance Semigroup x => LActSgMorph x ()
+
 -- | Monoid action
-instance RAct s () where
+instance RAct x () where
   x $<> () = x
   {-# INLINE ($<>) #-}
 

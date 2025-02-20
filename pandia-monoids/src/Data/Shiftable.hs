@@ -63,6 +63,9 @@ instance Origin x => Origin (Identity x) where
 
 ------------------------------------ Shift -------------------------------------
 
+class (Origin x, LAct x s) => LShiftable x s where
+  lshift :: x -> s
+
 class (LAct s (Shift s), Semigroup (Shift s)) => Shiftable s where
   type Shift s
   shift :: s -> Shift s
