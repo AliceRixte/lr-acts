@@ -3,7 +3,6 @@
 {-# LANGUAGE DerivingVia                #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
-{-# LANGUAGE ConstraintKinds            #-}
 
 --------------------------------------------------------------------------------
 -- |

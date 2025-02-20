@@ -37,20 +37,6 @@ library
       Paths_pandia_monoids
   hs-source-dirs:
       src
-  default-extensions:
-      GeneralizedNewtypeDeriving
-      FunctionalDependencies
-      MultiParamTypeClasses
-      FlexibleContexts
-      FlexibleInstances
-      StandaloneDeriving
-      ScopedTypeVariables
-      UndecidableInstances
-      MonoLocalBinds
-      DataKinds
-      TypeOperators
-      TypeFamilies
-      OverloadedLabels
   ghc-options: -Wall -threaded -O2 -fprint-potential-instances
   build-depends:
       base >=4.18 && <5

@@ -34,20 +34,20 @@ library:
   ghc-options:
   - -O2
   - -fprint-potential-instances
-  default-extensions:
-  - GeneralizedNewtypeDeriving
-  - FunctionalDependencies
-  - MultiParamTypeClasses
-  - FlexibleContexts
-  - FlexibleInstances
-  - StandaloneDeriving
-  - ScopedTypeVariables
-  - UndecidableInstances
-  - MonoLocalBinds
-  - DataKinds
-  - TypeOperators
-  - TypeFamilies
-  - OverloadedLabels
+  # default-extensions:
+  # - GeneralizedNewtypeDeriving
+  # - FunctionalDependencies
+  # - MultiParamTypeClasses
+  # - FlexibleContexts
+  # - FlexibleInstances
+  # - StandaloneDeriving
+  # - ScopedTypeVariables
+  # - UndecidableInstances
+  # - MonoLocalBinds
+  # - DataKinds
+  # - TypeOperators
+  # - TypeFamilies
+  # - OverloadedLabels
   source-dirs: src
 
 tests:

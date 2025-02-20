@@ -3,6 +3,8 @@
 {-# LANGUAGE DerivingVia                #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
+{-# LANGUAGE TypeFamilies               #-}
+{-# LANGUAGE FlexibleContexts           #-}
 
 --------------------------------------------------------------------------------
 -- |
