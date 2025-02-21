@@ -32,6 +32,7 @@
 
 module Data.Shiftable
   ( Shiftable (..)
+  , LShiftable (..)
   , Origin (..)
   ) where
 
