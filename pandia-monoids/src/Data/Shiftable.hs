@@ -65,8 +65,24 @@ instance Origin x => Origin (Identity x) where
 
 ------------------------------------ Shift -------------------------------------
 
-class (Origin x, LAct x s) => LShiftable x s where
+-- | A set @x@ that can be lifted in some semigroup @s@.
+--
+-- Instances must satisfy the following law
+--
+-- @lshift x <>$ origin == x@
+--
+-- This is a generalisation of a G-torsor
+--
+class (LActSg x s, Semigroup s, Origin x) => LShiftable x s where
   lshift :: x -> s
+
+instance (Origin s, Semigroup s) => LShiftable s (ActSelf s) where
+  lshift = ActSelf
+
+instance LShiftable x s => LShiftable (Identity x) (Identity s) where
+  lshift = coerce (lshift :: x -> s)
+
+
 
 class (LAct s (Shift s), Semigroup (Shift s)) => Shiftable s where
   type Shift s

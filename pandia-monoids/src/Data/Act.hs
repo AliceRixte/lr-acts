@@ -35,16 +35,16 @@
 --
 -- import Data.Act import Data.Semigroup
 --
--- newtype Time = Time Float
+-- newtype Seconds = Seconds Float
 --
--- newtype Duration = Duration Time
+-- newtype Duration = Duration Seconds
 --   deriving ('Semigroup', 'Monoid') via ('Sum' Float)
---   deriving ('LAct' Time, 'RAct' Time) via ('ActCoerce' ('Sum' Float))
+--   deriving ('LAct' Seconds, 'RAct' Seconds) via ('ActCoerce' ('Sum' Float))
 -- @
 --
 -- @
--- >>> Duration (Time 1) <>$ (Time 2)
--- Time 3.0
+-- >>> Duration (Seconds 1) <>$ (Seconds 2)
+-- Seconds 3.0
 -- @
 --
 -- == Instances driven by the acting type
@@ -283,17 +283,17 @@ instance Monoid s => RActMn s (ActSelf s)
 --
 -- This is meant to be used in conjunction with the @deriving via@ strategy when
 -- defining newtype wrappers. Here is a concrete example, where durations act on
--- time. Here, @Time@ is not a semigroup and @Duration@ is a group that acts on
--- time via the derived instance @LAct Time Duration@.
+-- time. Here, @Seconds@ is not a semigroup and @Duration@ is a group that acts on
+-- time via the derived instance @LAct Seconds Duration@.
 --
 -- @
 -- import Data.Semigroup
 --
--- newtype Time = Time Float
+-- newtype Seconds = Seconds Float
 --
--- newtype Duration = Duration Time
--- deriving ('Semigroup', 'Monoid', 'Group') via ('Sum' Float)
--- deriving ('LAct' Time) via ('ActCoerce' ('Sum' Float))
+-- newtype Duration = Duration Seconds
+--   deriving ('Semigroup', 'Monoid', 'Group') via ('Sum' Float)
+--   deriving ('LAct' Seconds) via ('ActCoerce' ('Sum' Float))
 -- @
 newtype ActCoerce x = ActCoerce {unactCoerce :: x}
   deriving stock (Show, Eq)
@@ -360,6 +360,9 @@ instance (LAct x s, Functor f) => LAct (f x) (ActMap s) where
 
 instance (LActSg x s, Functor f) => LActSg (f x) (ActMap s)
 instance (LActMn x s, Functor f) => LActMn (f x) (ActMap s)
+instance LActSg x s => LActSgMorph [x] (ActMap s)
+instance LActMn x s => LActNeutral [x] (ActMap s)
+
 
 -- | Preserves the semigroup (resp. monoid) property of @'LAct' x s@, but
 -- __not__ the morphism properties, which depend on potential @'Semigroup'@
