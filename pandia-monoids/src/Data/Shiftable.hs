@@ -36,7 +36,7 @@ module Data.Shiftable
   , Origin (..)
   ) where
 
-import Data.Semigroup
+import Data.Monoid as Mn
 import Data.Functor.Identity
 import Data.Coerce
 
@@ -48,6 +48,7 @@ import Linear as Lin
 class Origin s where
   origin :: s
 
+
 instance Num x => Origin (Sum x) where
   origin = 0
   {-# INLINE origin #-}
@@ -55,6 +56,23 @@ instance Num x => Origin (Sum x) where
 instance Num x => Origin (Product x) where
   origin = 1
   {-# INLINE origin #-}
+
+instance Origin Any where
+  origin = Any False
+  {-# INLINE origin #-}
+
+instance Origin All where
+  origin = All True
+  {-# INLINE origin #-}
+
+instance Origin (Mn.First a) where
+  origin = Mn.First Nothing
+  {-# INLINE origin #-}
+
+instance Origin (Mn.Last a) where
+  origin = Mn.Last Nothing
+  {-# INLINE origin #-}
+
 
 instance Origin (Maybe x) where
   origin = Nothing
