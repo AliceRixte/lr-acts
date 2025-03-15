@@ -34,6 +34,7 @@ module Data.Shiftable
   ( Shiftable (..)
   , LShiftable (..)
   , Origin (..)
+  , fromOrigin
   ) where
 
 import Data.Monoid as Mn
@@ -47,7 +48,6 @@ import Linear as Lin
 
 class Origin s where
   origin :: s
-
 
 instance Num x => Origin (Sum x) where
   origin = 0
@@ -86,6 +86,10 @@ instance Origin [a] where
   origin = []
   {-# INLINE origin #-}
 
+fromOrigin :: Origin x => Maybe x -> x
+fromOrigin = maybe origin id
+{-# INLINE fromOrigin #-}
+
 ------------------------------------ Shift -------------------------------------
 
 -- | A set @x@ that can be lifted in some semigroup @s@.
@@ -109,6 +113,7 @@ instance (Semigroup s, Coercible x s, Origin x)
 
 instance LShiftable x s => LShiftable (Identity x) (Identity s) where
   lshift = coerce (lshift :: x -> s)
+  {-# INLINE lshift #-}
 
 
 
