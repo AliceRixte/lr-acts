@@ -64,6 +64,10 @@ instance Origin x => Origin (Identity x) where
   origin = Identity origin
   {-# INLINE origin #-}
 
+instance Origin [a] where
+  origin = []
+  {-# INLINE origin #-}
+
 ------------------------------------ Shift -------------------------------------
 
 -- | A set @x@ that can be lifted in some semigroup @s@.
