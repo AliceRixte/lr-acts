@@ -545,6 +545,14 @@ instance RActDistrib x s => LActDistrib x (Dual s)
 instance RActNeutral x s => LActNeutral x (Dual s)
 
 -- | Monoid action
+instance LAct x (Endo x) where
+  Endo f <>$ x = f x
+  {-# INLINE (<>$) #-}
+
+instance LActSg x (Endo x)
+instance LActMn x (Endo x)
+
+-- | Monoid action
 instance Num x => LAct x (Sum x) where
   (<>$) s = coerce (s <>)
   {-# INLINE (<>$) #-}
