@@ -5,6 +5,7 @@
 {-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE TypeFamilies               #-}
 {-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE RankNTypes                 #-}
 
 --------------------------------------------------------------------------------
 -- |
@@ -35,11 +36,13 @@ module Data.Shiftable
   , LShiftable (..)
   , Origin (..)
   , fromOrigin
+  , maybeOrigin
   ) where
 
 import Data.Monoid as Mn
 import Data.Functor.Identity
 import Data.Coerce
+import Data.Maybe (fromMaybe)
 
 import Data.Act
 import Linear as Lin
@@ -89,6 +92,13 @@ instance Origin [a] where
 fromOrigin :: Origin x => Maybe x -> x
 fromOrigin = maybe origin id
 {-# INLINE fromOrigin #-}
+
+type Lens s t a b = forall f. Functor f => (a -> f b) -> s -> f t
+type Lens' s a = Lens s s a a
+
+maybeOrigin :: Origin a => Lens' (Maybe a) a
+maybeOrigin f a = fmap Just (f (fromMaybe origin a))
+{-# INLINE maybeOrigin #-}
 
 ------------------------------------ Shift -------------------------------------
 
