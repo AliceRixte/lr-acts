@@ -155,7 +155,7 @@ class LAct x s where
 --
 class (LAct x s, Semigroup s) => LActSg x s
 
--- | A left monoid action
+-- | A left monoid action, also called a left /unitary/ action.
 --
 -- In addition to the laws of @'LActSg'@, instances must satisfy the following
 -- law :
@@ -222,7 +222,7 @@ class RAct x s where
 --
 class (RAct x s, Semigroup s) => RActSg x s
 
--- | A right monoid action
+-- | A right monoid action, also called a right /unitary/ action.
 --
 -- In addition to the laws of @'RActSg'@, instances must satisfy the following
 -- law :
@@ -360,7 +360,7 @@ instance Monoid x => RActNeutral x (ActId s)
 
 -- | An action on any functor that uses the @fmap@ function. For example :
 --
--- @'ActMap' ('ActSelf' \"Hello\") <>$ [\" World\", " !"]  === ["Hello World", "Hello !"]@
+-- @'ActMap' ('ActSelf' \"Hello\") <>$ [\" World\", " !"]  == ["Hello World", "Hello !"]@
 newtype ActMap s = ActMap {unactMap :: s}
   deriving stock (Show, Eq)
   deriving newtype (Semigroup, Monoid)
@@ -393,7 +393,7 @@ instance RAct x s => RActNeutral [x] (ActMap s)
 -- | An action @(<>$)@ can be feeded as an operator for the @'foldr'@ function,
 -- allowing to lift any action to some @'Foldable'@ container. For example :
 --
---  @'ActFold' ['Sum' (1 :: Int), 'Sum' 2, 'Sum' 3] <>$ (4 :: Int) === 10 :: Int @
+--  @'ActFold' ['Sum' (1 :: Int), 'Sum' 2, 'Sum' 3] <>$ (4 :: Int) == 10 :: Int @
 newtype ActFold s = ActFold {unactFold :: s}
   deriving stock (Show, Eq)
   deriving newtype (Semigroup, Monoid)
