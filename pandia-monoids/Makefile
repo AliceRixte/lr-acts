@@ -35,6 +35,9 @@ clean-hard:
 	rm -r $(stack-work)
 	rm -r $(stack-work-prof)
 
+doc :
+	$(stack) haddock --no-haddock-deps
+
 bench:
 	[[ -d $(make-work) ]] || mkdir $(make-work)
 	$(stack) bench $(pkg):bench:$(bch) --ba "--output $(make-work)/$(bch).html"
