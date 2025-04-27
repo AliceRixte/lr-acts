@@ -117,8 +117,8 @@ instance (Origin s, Semigroup s) => LShiftable s (ActSelf s) where
   lshift = ActSelf
 
 instance (Semigroup s, Coercible x s, Origin x)
-  => LShiftable x (ActCoerce s) where
-  lshift = ActCoerce . coerce
+  => LShiftable x (ActSelf' s) where
+  lshift = ActSelf' . coerce
   {-# INLINE lshift #-}
 
 instance LShiftable x s => LShiftable (Identity x) (Identity s) where
