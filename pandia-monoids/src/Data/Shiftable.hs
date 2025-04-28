@@ -39,6 +39,7 @@ module Data.Shiftable
   , Origin (..)
   , fromOrigin
   , maybeOrigin
+  , module Data.Shiftable
   ) where
 
 import Data.Monoid as Mn
@@ -239,12 +240,18 @@ class LActGen x s where
 --   mempty' :: x
 
 newtype Timestamp a = Timestamp a
+  deriving stock (Show, Read, Eq, Ord)
+
 
 newtype Duration a = Duration a
+  deriving stock (Show, Read, Eq, Ord)
   deriving (Semigroup, Monoid) via (Sum a)
-  deriving (LAct (Duration a), LActGen (Duration a))
+  deriving (LAct (Timestamp a), LActGen (Timestamp a))
     via (ActSelf' (Sum a))
 
+
+origins :: forall s x. LActGen x s => [x]
+origins = lgeneratorsList @x @s
 -- instance LActMn (Timestamp a) (Duration a)  where
 
 
