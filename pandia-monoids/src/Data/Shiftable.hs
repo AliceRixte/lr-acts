@@ -35,7 +35,6 @@
 
 module Data.Shiftable
   ( Shiftable (..)
-  , LShiftable (..)
   , Origin (..)
   , fromOrigin
   , maybeOrigin
@@ -110,21 +109,21 @@ maybeOrigin f a = fmap Just (f (fromMaybe origin a))
 -- @lshift x <>$ origin == x@
 --
 -- This is a generalisation of a G-torsor
---
-class (LActSg x s, Semigroup s, Origin x) => LShiftable x s where
-  lshift :: x -> s
+-- --
+-- class (LActSg x s, Semigroup s, Origin x) => LShiftable x s where
+--   lshift :: x -> s
 
-instance (Origin s, Semigroup s) => LShiftable s (ActSelf s) where
-  lshift = ActSelf
+-- instance (Origin s, Semigroup s) => LShiftable s (ActSelf s) where
+--   lshift = ActSelf
 
-instance (Semigroup s, Coercible x s, Origin x)
-  => LShiftable x (ActSelf' s) where
-  lshift = ActSelf' . coerce
-  {-# INLINE lshift #-}
+-- instance (Semigroup s, Coercible x s, Origin x)
+--   => LShiftable x (ActSelf' s) where
+--   lshift = ActSelf' . coerce
+--   {-# INLINE lshift #-}
 
-instance LShiftable x s => LShiftable (Identity x) (Identity s) where
-  lshift = coerce (lshift :: x -> s)
-  {-# INLINE lshift #-}
+-- instance LShiftable x s => LShiftable (Identity x) (Identity s) where
+--   lshift = coerce (lshift :: x -> s)
+--   {-# INLINE lshift #-}
 
 
 
@@ -234,34 +233,6 @@ origins = lgeneratorsList @x @s
 
 
 
--- | A free left monoid action
---
--- In mathematical terms, a set of elements @b@ of elements of type @x@ is said
--- to be a basis of the action @LAct x s@ if for every @x::x@, there is a unique
--- pair @(b,s)@ such that @s <>$ b == x@.
---
--- See /Monoids, Acts and Categories/ by Mati Kilp, Ulrich Knauer, Alexander V.
--- Mikhalev, definition 1.5.11, p.67.
---
--- In Haskell terms, instances must satisfy the following law :
---
---
--- 1. 'lbasisMember' @ (Proxy :: Proxy s) ('fst' $ 'lshiftFrom' x) == True@
--- 2. 'snd' @('lshiftFrom' x) <>$ 'fst' ('lshiftFrom' x) == x@
--- 3. if @y == s <>$ x@ and @'lbasisMember' (Proxy :: Proxy s) x == True@, then
---   @'lshiftFrom' y == (x,s)@è²
---
--- In the previous laws, the first law garanties that @b@ is indeed a member of
--- the basis, the second law ensures the equality in the decomposition and the
--- third law the uniqueness of that decomposition.
---
-
---
-class LActMn x s => LActMnGen x s where
-  lbasisMember :: proxy s -> x -> Bool
-  lbasis :: proxy s -> [x]
-  lshiftFromBasis :: x -> (x,s)
-
 
 -- class LActFiniteFree x s => OneFree x s where
 --   origin :: poxy s -> x
@@ -276,5 +247,12 @@ instance Num x => LActGen x (Sum x) where
   lgenerators x = x == 0
   lgeneratorsList = [0]
   lshiftFromGen x = (0, Sum x)
+
+
+class LActCyclic x s where
+  lorigin :: x
+
+  lshift :: x -> s
+
 
 
