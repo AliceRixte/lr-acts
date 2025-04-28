@@ -39,7 +39,6 @@ module Data.Shiftable
   , Origin (..)
   , fromOrigin
   , maybeOrigin
-  , module Data.Shiftable
   ) where
 
 import Data.Monoid as Mn
@@ -48,7 +47,6 @@ import Data.Coerce
 import Data.Maybe (fromMaybe)
 
 import Data.Act
-import Linear as Lin
 
 ------------------------------------ Origin ------------------------------------
 
@@ -148,27 +146,6 @@ instance Shiftable x => Shiftable (Identity x) where
   type Shift (Identity x) = Identity (Shift x)
   shift = coerce . shift
   {-# INLINE shift #-}
-
-instance Semigroup a => Shiftable (V1 a) where
-  type Shift (V1 a) = V1 a
-  shift = id
-  {-# INLINE shift #-}
-
-instance Semigroup a => Shiftable (V2 a) where
-  type Shift (V2 a) = V2 a
-  shift = id
-  {-# INLINE shift #-}
-
-instance Semigroup a => Shiftable (V3 a) where
-  type Shift (V3 a) = V3 a
-  shift = id
-  {-# INLINE shift #-}
-
-instance Semigroup a => Shiftable (V4 a) where
-  type Shift (V4 a) = V4 a
-  shift = id
-  {-# INLINE shift #-}
-
 
 
 ------------------------------------------------------------------------------

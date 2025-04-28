@@ -22,7 +22,6 @@ description:         Please see the README on GitHub at <https://github.com/Alic
 dependencies:
 - base >= 4.18 && < 5
 - groups >= 0.5
-- linear
 
 ghc-options:
   - -Wall
