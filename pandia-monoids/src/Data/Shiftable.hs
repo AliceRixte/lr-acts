@@ -8,6 +8,7 @@
 {-# LANGUAGE RankNTypes                 #-}
 {-# LANGUAGE TypeApplications           #-}
 {-# LANGUAGE AllowAmbiguousTypes        #-}
+{-# LANGUAGE DefaultSignatures          #-}
 
 --------------------------------------------------------------------------------
 -- |
