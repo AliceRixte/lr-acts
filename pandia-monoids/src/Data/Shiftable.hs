@@ -193,19 +193,30 @@ class LActGen x s where
   -- meaning the function that returns @True@ for all elements of @x@ that are
   -- origins of the action and @False@ otherwise.
   --
-  lgenerators :: Eq x => x -> Bool
-  lgenerators x = x `elem` lgeneratorsList @x @s
+  lgenerators' :: x -> Bool
+  default lgenerators' :: Eq x => x -> Bool
+  lgenerators' x = x `elem` lgeneratorsList' @x @s
 
   -- | The set of origins of the action @LAct x s@ seen as a list.
   --
   -- You can let this function undefined if the set of origins cannot be
   -- represented as a list.
   --
-  lgeneratorsList :: [x]
+  lgeneratorsList' :: [x]
 
   -- | Returns a point's associated origin @o@ along with an action @s@ such
   -- that @s <>$ o == x@.
   lshiftFromGen:: x -> (x,s)
+
+lgenerators :: forall s x. LActGen x s => x -> Bool
+lgenerators = lgenerators' @x @s
+{-# INLINE lgenerators #-}
+
+lgeneratorsList :: forall s x. LActGen x s => [x]
+lgeneratorsList = lgeneratorsList' @x @s
+{-# INLINE lgeneratorsList #-}
+
+
 
 
 -- class Semigroup' x where
@@ -227,7 +238,7 @@ newtype Duration a = Duration a
 
 
 origins :: forall s x. LActGen x s => [x]
-origins = lgeneratorsList @x @s
+origins = lgeneratorsList @s
 -- instance LActMn (Timestamp a) (Duration a)  where
 
 
@@ -237,22 +248,44 @@ origins = lgeneratorsList @x @s
 -- class LActFiniteFree x s => OneFree x s where
 --   origin :: poxy s -> x
 
-instance (Coercible x s, Monoid s) => LActGen x (ActSelf' s) where
-  lgenerators x = x == coerce (mempty :: s)
-  lgeneratorsList = [coerce (mempty :: s)]
+instance (Eq x, Coercible x s, Monoid s) => LActGen x (ActSelf' s) where
+  lgenerators' x = x == coerce (mempty :: s)
+  lgeneratorsList' = [coerce (mempty :: s)]
   lshiftFromGen x = (coerce (mempty :: s), coerce x :: ActSelf' s)
 
 
-instance Num x => LActGen x (Sum x) where
-  lgenerators x = x == 0
-  lgeneratorsList = [0]
-  lshiftFromGen x = (0, Sum x)
+instance (Eq x, Num x) => LActGen x (Sum x) where
+  lgenerators' = lgeneratorsDefault @(Sum x)
+  lgeneratorsList' = lgeneratorsListDefault @(Sum x)
+  lshiftFromGen = lshiftFromGenDefault
+
+instance (Eq x, Num x) => LActCyclic x (Sum x) where
+  lorigin' = 0
+  {-# INLINE lorigin' #-}
+  lshift = Sum
+  {-# INLINE lshift #-}
 
 
-class LActCyclic x s where
-  lorigin :: x
 
+class LActGen x s => LActCyclic x s where
+  lorigin' :: x
   lshift :: x -> s
+
+lorigin :: forall s x. LActCyclic x s => x
+lorigin = lorigin' @x @s
+{-# INLINE lorigin #-}
+
+lgeneratorsDefault :: forall s x. (Eq x, LActCyclic x s) => x -> Bool
+lgeneratorsDefault x = x == lorigin @s
+{-# INLINE lgeneratorsDefault #-}
+
+lgeneratorsListDefault :: forall s x. LActCyclic x s => [x]
+lgeneratorsListDefault = [lorigin @s]
+{-# INLINE lgeneratorsListDefault #-}
+
+lshiftFromGenDefault :: forall s x. LActCyclic x s => x -> (x,s)
+lshiftFromGenDefault x = (lorigin @s, lshift x)
+{-# INLINE lshiftFromGenDefault #-}
 
 
 
