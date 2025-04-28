@@ -13,7 +13,7 @@
 -- Semidirect products
 -----------------------------------------------------------------------------
 
-module Data.Semigroup.Semidirect.Lazy
+module Data.Semidirect.Lazy
        ( LSemidirect (..)
        , lerase
        , lforget
