@@ -116,6 +116,7 @@ module Data.Act
   , ActSelf (..)
   , ActId (..)
   , ActMap (..)
+  , ActFold (..)
   , ActFold' (..)
   , ActSelf' (..)
 ) where
@@ -422,21 +423,45 @@ instance RAct x s => RActDistrib [x] (ActMap s)
 instance RAct x s => RActNeutral [x] (ActMap s)
 
 -- | Lifting an a container as an action using @'foldr'@ (for /left/ actions) or
--- @'foldl''@ (for /right/ actions).
+-- @'foldl'@ (for /right/ actions). For a strict version, use @'ActFold''@.
 --
 -- A left action @(<>$)@ can be seen as an operator for the @'foldr'@ function,
 -- and a allowing to lift any action to some @'Foldable'@ container.
 --
--- >> ActFold' [Sum (1 :: Int), Sum 2, Sum 3] <>$ (4 :: Int)
+-- >> ActFold [Sum (1 :: Int), Sum 2, Sum 3] <>$ (4 :: Int)
 -- >  10
 --
-newtype ActFold' s = ActFold' {unactFold :: s}
+newtype ActFold s = ActFold {unactFold :: s}
+  deriving stock (Show, Eq)
+  deriving newtype (Semigroup, Monoid)
+
+-- | When used with lists @[]@, this is a monoid action
+instance (Foldable f, LAct x s) => LAct x (ActFold (f s)) where
+  ActFold f <>$ x = foldr (<>$) x f
+  {-# INLINE (<>$) #-}
+
+instance LAct x s => LActSg x (ActFold [s])
+
+-- | When used with lists @[]@, this is a monoid action
+instance (Foldable f, RAct x s) => RAct x (ActFold (f s)) where
+  x $<> ActFold f = foldl ($<>) x f
+  {-# INLINE ($<>) #-}
+
+-- | Lifting an a container as an action using @'fold'r'@ (for /left/ actions)
+-- or @'foldl''@ (for /right/ actions). For a lazy version, use @'ActFold'@.
+--
+-- A left action @(<>$)@ can be seen as an operator for the @'foldr'@ function,
+-- and a allowing to lift any action to some @'Foldable'@ container.
+--
+-- >> ActFold' [Sum (1 :: Int), Sum 2, Sum 3] <>$ (4 :: Int) 10
+--
+newtype ActFold' s = ActFold' {unactFold' :: s}
   deriving stock (Show, Eq)
   deriving newtype (Semigroup, Monoid)
 
 -- | When used with lists @[]@, this is a monoid action
 instance (Foldable f, LAct x s) => LAct x (ActFold' (f s)) where
-  ActFold' f <>$ x = foldr (<>$) x f
+  ActFold' f <>$ x = foldr' (<>$) x f
   {-# INLINE (<>$) #-}
 
 instance LAct x s => LActSg x (ActFold' [s])
