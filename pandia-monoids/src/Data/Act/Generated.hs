@@ -24,7 +24,8 @@
 
 module Data.Act.Generated where
 
-
+import Data.Bifunctor
+import Data.Functor.Identity
 import Data.Coerce
 import Data.Semigroup as Sg
 import Data.Monoid as Mn
@@ -175,22 +176,6 @@ lorigin = lorigin' @x @s
 
 
 
-instance (Eq x, Coercible x s, Monoid s) => LActGen x (ActSelf' s)
-
-instance (Eq x, Coercible x s, Monoid s) => LActCyclic x (ActSelf' s) where
-  lorigin' = coerce (mempty :: s)
-  {-# INLINE lorigin' #-}
-  lshift = coerce
-  {-# INLINE lshift #-}
-
-
-instance (Eq x, Num x) => LActGen x (Sum x)
-
-instance (Eq x, Num x) => LActCyclic x (Sum x) where
-  lorigin' = 0
-  {-# INLINE lorigin' #-}
-  lshift = Sum
-  {-# INLINE lshift #-}
 
 
 ------------------------------------------------------------------------------
@@ -318,6 +303,145 @@ class RActGen x s => RActCyclic x s where
 rorigin :: forall s x. RActCyclic x s => x
 rorigin = rorigin' @x @s
 {-# INLINE rorigin #-}
+
+------------------------------------------------------------------------------
+
+-- Identity --
+
+instance LActGen x s => LActGen (Identity x) (Identity s) where
+  lgenerators' (Identity x) = lgenerators @s x
+  {-# INLINE lgenerators' #-}
+  lgeneratorsList' = Identity <$> lgeneratorsList @s
+  {-# INLINE lgeneratorsList' #-}
+  lshiftFromGen (Identity x) = bimap Identity Identity $ lshiftFromGen x
+  {-# INLINE lshiftFromGen #-}
+
+instance LActCyclic x s => LActCyclic (Identity x) (Identity s) where
+  lorigin' = Identity (lorigin @s)
+  {-# INLINE lorigin' #-}
+  lshift (Identity x) = Identity (lshift x)
+  {-# INLINE lshift #-}
+
+instance RActGen x s => RActGen (Identity x) (Identity s) where
+  rgenerators' (Identity x) = rgenerators @s x
+  {-# INLINE rgenerators' #-}
+  rgeneratorsList' = Identity <$> rgeneratorsList @s
+  {-# INLINE rgeneratorsList' #-}
+  rshiftFromGen (Identity x) = bimap Identity Identity $ rshiftFromGen x
+  {-# INLINE rshiftFromGen #-}
+
+instance RActCyclic x s => RActCyclic (Identity x) (Identity s) where
+  rorigin' = Identity (rorigin @s)
+  {-# INLINE rorigin' #-}
+  rshift (Identity x) = Identity (rshift x)
+  {-# INLINE rshift #-}
+
+-- ActSelf --
+
+instance (Eq s, Monoid s) => LActGen s (ActSelf s)
+
+instance (Eq s, Monoid s) => LActCyclic s (ActSelf s) where
+  lorigin' = mempty
+  {-# INLINE lorigin' #-}
+  lshift = ActSelf
+  {-# INLINE lshift #-}
+
+instance (Eq s, Monoid s) => RActGen s (ActSelf s)
+
+instance (Eq s, Monoid s) => RActCyclic s (ActSelf s) where
+  rorigin' = mempty
+  {-# INLINE rorigin' #-}
+  rshift = ActSelf
+  {-# INLINE rshift #-}
+
+
+-- ActSelf' --
+
+instance (Eq x, Coercible x s, Monoid s) => LActGen x (ActSelf' s)
+
+instance (Eq x, Coercible x s, Monoid s) => LActCyclic x (ActSelf' s) where
+  lorigin' = coerce (mempty :: s)
+  {-# INLINE lorigin' #-}
+  lshift = coerce
+  {-# INLINE lshift #-}
+
+instance (Eq x, Coercible x s, Monoid s) => RActGen x (ActSelf' s)
+
+instance (Eq x, Coercible x s, Monoid s) => RActCyclic x (ActSelf' s) where
+  rorigin' = coerce (mempty :: s)
+  {-# INLINE rorigin' #-}
+  rshift = coerce
+  {-# INLINE rshift #-}
+
+-- Sum --
+
+instance (Eq x, Num x) => LActGen x (Sum x)
+
+instance (Eq x, Num x) => LActCyclic x (Sum x) where
+  lorigin' = 0
+  {-# INLINE lorigin' #-}
+  lshift = Sum
+  {-# INLINE lshift #-}
+
+instance (Eq x, Num x) => RActGen x (Sum x)
+
+instance (Eq x, Num x) => RActCyclic x (Sum x) where
+  rorigin' = 0
+  {-# INLINE rorigin' #-}
+  rshift = Sum
+  {-# INLINE rshift #-}
+
+-- Product --
+
+instance (Eq x, Num x) => LActGen x (Product x)
+
+instance (Eq x, Num x) => LActCyclic x (Product x) where
+  lorigin' = 1
+  {-# INLINE lorigin' #-}
+  lshift = Product
+  {-# INLINE lshift #-}
+
+instance (Eq x, Num x) => RActGen x (Product x)
+
+instance (Eq x, Num x) => RActCyclic x (Product x) where
+  rorigin' = 1
+  {-# INLINE rorigin' #-}
+  rshift = Product
+  {-# INLINE rshift #-}
+
+-- Product on Sum --
+
+instance (Eq x, Num x) => LActGen (Sum x) (Product x)
+
+instance (Eq x, Num x) => LActCyclic (Sum x) (Product x) where
+  lorigin' = 1
+  {-# INLINE lorigin' #-}
+  lshift = coerce
+  {-# INLINE lshift #-}
+
+instance (Eq x, Num x) => RActGen (Sum x) (Product x)
+
+instance (Eq x, Num x) => RActCyclic (Sum x) (Product x) where
+  rorigin' = 1
+  {-# INLINE rorigin' #-}
+  rshift = coerce
+  {-# INLINE rshift #-}
+
+
+-- First --
+
+-- instance (Eq x, Ord x) => LActGen x (Mn.First x)
+
+-- instance (Eq x, Ord x) => LActCyclic x (Mn.First x) where
+--   lorigin' = Mn.First Nothing
+--   {-# INLINE lorigin' #-}
+--   lshift = Mn.First . Just
+--   {-# INLINE lshift #-}
+
+
+
+
+
 
 
 
