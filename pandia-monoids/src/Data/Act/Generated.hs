@@ -5,6 +5,23 @@
 {-# LANGUAGE FlexibleInstances      #-}
 {-# LANGUAGE MultiParamTypeClasses  #-}
 
+--------------------------------------------------------------------------------
+-- |
+--
+-- Module      :  Data.Act
+-- Description :  Actions of sets, semigroups, monoids or groups.
+-- Copyright   :  (c) Alice Rixte 2024
+-- License     :  LGPL 3
+-- Maintainer  :  alice.rixte@u-bordeaux.fr
+-- Stability   :  unstable
+-- Portability :  non-portable (GHC extensions)
+--
+-- == Presentation
+--
+--
+--------------------------------------------------------------------------------
+
+
 module Data.Act.Generated where
 
 
@@ -20,10 +37,10 @@ import Data.Act
 -- [Algebraic definition :]
 --
 -- In algebraic terms, a subset @u@ of the set @x@ is a /generating set/ of the
--- action @LAct x s@ if for every @x :: x@, there exists a pair @(u,s) ::
--- (u,s)@. When the set @u@ is finite, the action @LAct x s@ is said to be
--- finitely generated. When @u@ is a singleton, the action is said to be
--- /cyclic/ (see @'LActCyclic'@). (See /Monoids, Acts and Categories/ by Mati
+-- action @LAct x s@ if for every @x :: x@, there exists a pair @(u,s) :: (u,s)@
+-- such that @s <>$ u = x@. When the set @u@ is finite, the action @LAct x s@ is
+-- said to be finitely generated. When @u@ is a singleton, the action is said to
+-- be /cyclic/ (see @'LActCyclic'@). (See /Monoids, Acts and Categories/ by Mati
 -- Kilp, Ulrich Knauer, Alexander V. Mikhalev, definition 1.5.1, p.63.)
 --
 -- [In Haskell terms :]
@@ -52,12 +69,22 @@ import Data.Act
 --   deriving (Semigroup, Monoid) via (Sum a)
 --
 class LActGen x s where
-  -- | The set of origins of the action @LAct x s@.
+  -- | The set of origins of the action @'LAct' x s@.
   --
   -- This is a subset of @x@, represented as its characteristic function,
   -- meaning the function that returns @True@ for all elements of @x@ that are
   -- origins of the action and @False@ otherwise.
   --
+  -- To use @'lgenerators'@, you need TypeApplications:
+  --
+  -- >>> lgenerators' @Int @(Sum Int) 4
+  -- False
+  --
+  -- >>> lgenerators' @Int @(Sum Int) 0
+  -- True
+  --
+  -- To avoid having to use the redundant first type aplication, use
+  -- @'lgenerators'@.
   lgenerators' :: x -> Bool
   default lgenerators' :: Eq x => x -> Bool
   lgenerators' x = x `elem` lgeneratorsList' @x @s
@@ -67,24 +94,45 @@ class LActGen x s where
   -- You can let this function undefined if the set of origins cannot be
   -- represented as a list.
   --
+  -- >>> lgeneratorsList' @Int @(Sum Int)
+  -- [0]
+  --
+  -- To avoid having to use the redundant first type aplication, use
+  -- @'lgeneratorsList'@.
+  --
   lgeneratorsList' :: [x]
   default lgeneratorsList' :: LActCyclic x s => [x]
   lgeneratorsList' = [lorigin @s]
 
-  -- | Returns a point's associated origin @o@ along with an action @s@ such
-  -- that @s <>$ o == x@.
+  -- | Returns a point's associated genrator @u@ along with an action @s@ such
+  -- that @s <>$ u == x@.
   lshiftFromGen:: x -> (x,s)
   default lshiftFromGen :: LActCyclic x s => x -> (x,s)
   lshiftFromGen x = (lorigin @s, lshift x)
 
+-- | A version of @'lgenerators''@ such that the first type application is @s@.
+--
+-- >>> lgenerators @(Sum Int) (4 :: Int)
+-- False
+--
+-- >>> lgenerators @(Sum Int) (0 :: Int)
+-- True
+--
 lgenerators :: forall s x. LActGen x s => x -> Bool
 lgenerators = lgenerators' @x @s
 {-# INLINE lgenerators #-}
 
+-- | A version of @'lgeneratorsList''@ such that the first type application is
+-- @s@.
+--
+-- >>> lgeneratorsList @(Sum Int) :: [Int]
+-- [0]
+--
 lgeneratorsList :: forall s x. LActGen x s => [x]
 lgeneratorsList = lgeneratorsList' @x @s
 {-# INLINE lgeneratorsList #-}
 
+-- | An alias for @'lgeneratorsList'@.
 origins :: forall s x. LActGen x s => [x]
 origins = lgeneratorsList @s
 {-# INLINE origins #-}
@@ -101,23 +149,29 @@ origins = lgeneratorsList @s
 -- lorigin == x@
 --
 class LActGen x s => LActCyclic x s where
+  -- | The only generator of the action @LAct x s@.
+  --
+  -- >>> lorigin' @Int @(Sum Int)
+  -- 0
+  --
+  -- To avoid having to use the redundant first type aplication, use
+  -- @'lorigin'@.
+  --
   lorigin' :: x
+
+  --- | Shifts an element of @x@ into an action @lshift x@ such that
+  -- @lshift x <>$ lorigin == x@.
+  --
   lshift :: x -> s
 
+-- | A version of @'lorigin''@ such that the first type application is @s@.
+--
+-- >>> lorigin @(Sum Int) :: Int
+-- 0
+--
 lorigin :: forall s x. LActCyclic x s => x
 lorigin = lorigin' @x @s
 {-# INLINE lorigin #-}
-
-
--- newtype Timestamp a = Timestamp a
---   deriving stock (Show, Read, Eq, Ord)
-
-
--- newtype Duration a = Duration a
---   deriving stock (Show, Read, Eq, Ord)
---   deriving (Semigroup, Monoid) via (Sum a)
---   deriving (LAct (Timestamp a), LActGen (Timestamp a))
---     via (ActSelf' (Sum a))
 
 
 
@@ -137,4 +191,136 @@ instance (Eq x, Num x) => LActCyclic x (Sum x) where
   {-# INLINE lorigin' #-}
   lshift = Sum
   {-# INLINE lshift #-}
+
+
+------------------------------------------------------------------------------
+
+-- | A right action generated by a subset of generators @'lgenerators'@.
+--
+-- [Algebraic definition :]
+--
+-- In algebraic terms, a subset @u@ of the set @x@ is a /generating set/ of the
+-- action @RAct x s@ if for every @x :: x@, there exists a pair @(u,s) :: (u,s)@
+-- such that @u $<> s = x@. When the set @u@ is finite, the action @RAct x s@ is
+-- said to be finitely generated. When @u@ is a singleton, the action is said to
+-- be /cyclic/ (see @'RActCyclic'@). (See /Monoids, Acts and Categories/ by Mati
+-- Kilp, Ulrich Knauer, Alexander V. Mikhalev, definition 1.5.1, p.63.)
+--
+--
+-- [In Haskell terms :]
+--
+-- Intuitively, this means that by acting repeteadly on generators with actions
+-- of @s@, we can reach any element of @x@.
+--
+--
+-- Since the generating subset of @x@ maybe infinite, we give two alternative
+-- ways to define it : one using a characteristic function @'rgenerators'@ and
+-- the other using a list @'rgeneratorsList'@.
+--
+-- All the above is summarized by the following law that all instances must
+-- satisfy :
+--
+--
+-- 1. 'rgenerators'@  ('fst' $ 'rshiftFromGen' x) == True@
+-- 2. 'fst' ('rshiftFromGen' x) $<> 'snd' @('rshiftFromGen' x) == x@
+-- 3. 'rgenerators' @x == x `'elem'` 'rgeneratorsList' x@
+--
+class RActGen x s where
+  -- | The set of origins of the action @'RAct' x s@.
+  --
+  -- This is a subset of @x@, represented as its characteristic function,
+  -- meaning the function that returns @True@ for all elements of @x@ that are
+  -- origins of the action and @False@ otherwise.
+  --
+  -- To use @'rgenerators'@, you need TypeApplications:
+  --
+  -- >>> rgenerators' @(Sum Int) (4 :: Int)
+  -- False
+  --
+  -- >>> rgenerators' @(Sum Int) (0 :: Int)
+  -- True
+  --
+  -- To avoid having to use the redundant first type aplication, use
+  -- @'rgenerators'@.
+  rgenerators' :: x -> Bool
+  default rgenerators' :: Eq x => x -> Bool
+  rgenerators' x = x `elem` rgeneratorsList' @x @s
+  {-# INLINE rgenerators' #-}
+
+  -- | The set of origins of the action @RAct x s@ seen as a list.
+  --
+  -- You can let this function undefined if the set of origins cannot be
+  -- represented as a list.
+  --
+  -- >>> rgeneratorsList' @(Sum Int) :: [Int]
+  -- [0]
+  --
+  rgeneratorsList' :: [x]
+  default rgeneratorsList' :: RActCyclic x s => [x]
+  rgeneratorsList' = [rorigin @s]
+  {-# INLINE rgeneratorsList' #-}
+
+  -- | Returns a point's associated generator @u@ along with an action @s@ such
+  -- that @u $<> s == x@.
+  rshiftFromGen :: x -> (x,s)
+  default rshiftFromGen :: RActCyclic x s => x -> (x,s)
+  rshiftFromGen x = (rorigin @s, rshift x)
+  {-# INLINE rshiftFromGen #-}
+
+-- | A version of @'rgenerators''@ such that the first type application is @s@.
+--
+-- >>> rgenerators @(Sum Int) (4 :: Int)
+-- False
+--
+-- >>> rgenerators @(Sum Int) (0 :: Int)
+-- True
+--
+rgenerators :: forall s x. RActGen x s => x -> Bool
+rgenerators = rgenerators' @x @s
+{-# INLINE rgenerators #-}
+
+-- | A version of @'rgeneratorsList''@ such that the first type application is
+-- @s@.
+--
+-- >>> rgeneratorsList @(Sum Int) :: [Int]
+-- [0]
+--
+rgeneratorsList :: forall s x. RActGen x s => [x]
+rgeneratorsList = rgeneratorsList' @x @s
+{-# INLINE rgeneratorsList #-}
+
+-- | An alias for @'rgeneratorsList'@.
+--
+rorigins' :: forall s x. RActGen x s => [x]
+rorigins' = rgeneratorsList @s
+{-# INLINE rorigins' #-}
+
+
+class RActGen x s => RActCyclic x s where
+  -- | The only generator of the action @RAct x s@.
+  --
+  -- >>> rorigin' @(Sum Int) :: Int
+  -- 0
+  --
+  -- To avoid having to use the redundant first type aplication, use
+  -- @'rorigin'@.
+  rorigin' :: x
+
+  -- | Shifts an element of @x@ into an action @rshift x@ such that
+  -- @rshift x $<> rorigin == x@.
+  rshift :: x -> s
+
+-- | A version of @'rorigin''@ such that the first type application is @s@.
+--
+-- >>> rorigin @(Sum Int) :: Int
+-- 0
+--
+rorigin :: forall s x. RActCyclic x s => x
+rorigin = rorigin' @x @s
+{-# INLINE rorigin #-}
+
+
+
+
+
 
