@@ -29,6 +29,7 @@ source-repository head
 library
   exposed-modules:
       Data.Act
+      Data.Act.Generated
       Data.Semidirect
       Data.Semidirect.Lazy
       Data.Shiftable
