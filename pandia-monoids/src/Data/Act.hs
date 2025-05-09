@@ -3,7 +3,7 @@
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE DerivingVia                #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE ScopedTypeVariables        #-}
+  {-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE ConstraintKinds            #-}
 
 --------------------------------------------------------------------------------
@@ -77,7 +77,7 @@
 --
 --
 -- If you need such an instance, you should make a newtype. This library already
--- provides some, such as @'ActSelf'@,  @'ActId'@, @'ActSelf''@, @'ActFold''@
+-- provides some, such as @'ActSelf'@,  @'ActTrivial'@, @'ActSelf''@, @'ActFold''@
 -- and @'ActMap'@.
 --
 -- == Design choices compared with existing libraries
@@ -116,7 +116,7 @@ module Data.Act
   , RActNeutral
   , RActMnMorph
   , ActSelf (..)
-  , ActId (..)
+  , ActTrivial (..)
   , ActMap (..)
   , ActFold (..)
   , ActFold' (..)
@@ -316,7 +316,7 @@ type RActMnMorph x s = (RActMn x s, RActSgMorph x s, RActNeutral x s)
 -- @s@, this action is lifted to an @ActSelf@ action.
 newtype ActSelf s = ActSelf {unactSelf :: s}
   deriving stock (Show, Eq)
-  deriving newtype (Semigroup, Monoid)
+  deriving newtype (Semigroup, Monoid, Group)
 
 -- | Semigroup action (monoid action when @Monoid s@)
 instance Semigroup s => LAct s (ActSelf s) where
@@ -352,7 +352,7 @@ instance Monoid s => RActMn s (ActSelf s)
 --   @
 newtype ActSelf' x = ActSelf' {unactCoerce :: x}
   deriving stock (Show, Eq)
-  deriving newtype (Semigroup, Monoid)
+  deriving newtype (Semigroup, Monoid, Group)
 
 -- | Semigroup action (monoid action when @Monoid s@)
 instance {-# OVERLAPPABLE #-} (Semigroup s, Coercible x s)
@@ -384,36 +384,36 @@ instance (Coercible x s, Monoid s) => RActMn x (ActSelf' s)
 
 -- | The trivial action where any element of @s@ acts as the identity function
 -- on @x@
-newtype ActId x = ActId  {unactId :: x}
+newtype ActTrivial x = ActTrivial  {unactId :: x}
   deriving stock (Show, Eq)
-  deriving newtype (Semigroup, Monoid)
+  deriving newtype (Semigroup, Monoid, Group)
 
 -- | Action by morphism of monoids when @'Monoid' s@ and @'Monoid' x@
-instance LAct x (ActId s) where
+instance LAct x (ActTrivial s) where
   (<>$) _ = id
   {-# INLINE (<>$) #-}
 
-instance Semigroup s => LActSg x (ActId s)
-instance Monoid s => LActMn x (ActId s)
-instance Semigroup x => LActDistrib x (ActId s)
-instance Monoid x => LActNeutral x (ActId s)
+instance Semigroup s => LActSg x (ActTrivial s)
+instance Monoid s => LActMn x (ActTrivial s)
+instance Semigroup x => LActDistrib x (ActTrivial s)
+instance Monoid x => LActNeutral x (ActTrivial s)
 
 -- | Action by morphism of monoids when @'Monoid' s@ and @'Monoid' x@
-instance RAct x (ActId s) where
+instance RAct x (ActTrivial s) where
   x $<> _ = x
   {-# INLINE ($<>) #-}
 
-instance Semigroup s => RActSg x (ActId s)
-instance Monoid s => RActMn x (ActId s)
-instance Semigroup x => RActDistrib x (ActId s)
-instance Monoid x => RActNeutral x (ActId s)
+instance Semigroup s => RActSg x (ActTrivial s)
+instance Monoid s => RActMn x (ActTrivial s)
+instance Semigroup x => RActDistrib x (ActTrivial s)
+instance Monoid x => RActNeutral x (ActTrivial s)
 
 -- | An action on any functor that uses the @fmap@ function. For example :
 --
 -- @'ActMap' ('ActSelf' \"Hello\") <>$ [\" World\", " !"]  == ["Hello World", "Hello !"]@
 newtype ActMap s = ActMap {unactMap :: s}
   deriving stock (Show, Eq)
-  deriving newtype (Semigroup, Monoid)
+  deriving newtype (Semigroup, Monoid, Group)
 
 -- | Preserves the semigroup (resp. monoid) property of @'LAct' x s@, but
 -- __not__ the morphism properties, which depend on potential @'Semigroup'@
@@ -451,7 +451,7 @@ instance RAct x s => RActNeutral [x] (ActMap s)
 --
 newtype ActFold s = ActFold {unactFold :: s}
   deriving stock (Show, Eq)
-  deriving newtype (Semigroup, Monoid)
+  deriving newtype (Semigroup, Monoid, Group)
 
 -- | When used with lists @[]@, this is a monoid action
 instance (Foldable f, LAct x s) => LAct x (ActFold (f s)) where
@@ -475,7 +475,7 @@ instance (Foldable f, RAct x s) => RAct x (ActFold (f s)) where
 --
 newtype ActFold' s = ActFold' {unactFold' :: s}
   deriving stock (Show, Eq)
-  deriving newtype (Semigroup, Monoid)
+  deriving newtype (Semigroup, Monoid, Group)
 
 -- | When used with lists @[]@, this is a monoid action
 instance (Foldable f, LAct x s) => LAct x (ActFold' (f s)) where
@@ -583,23 +583,46 @@ instance (RAct x s, RAct x t) => RAct x (Either s t) where
 
 -------------------- Instances for base library functors ---------------------
 
+instance LAct x s => LAct x (Identity s) where
+  Identity s <>$ x = s <>$ x
+  {-# INLINE (<>$) #-}
+
+instance LActSg x s => LActSg x (Identity s)
+instance LActMn x s => LActMn x (Identity s)
+instance LActDistrib x s => LActDistrib x (Identity s)
+instance LActNeutral x s => LActNeutral x (Identity s)
+
+
 -- | Preserves action properties of @'LAct' x s@.
-instance LAct x s => LAct (Identity x) (Identity s) where
+instance {-# OVERLAPPING #-} LAct x s => LAct (Identity x) (Identity s) where
   Identity s <>$ Identity x = Identity (s <>$ x)
 
-instance LActSg x s => LActSg (Identity x) (Identity s)
-instance LActMn x s => LActMn (Identity x) (Identity s)
-instance LActDistrib x s => LActDistrib (Identity x) (Identity s)
-instance LActNeutral x s => LActNeutral (Identity x) (Identity s)
+instance {-# OVERLAPPING #-} LActSg x s => LActSg (Identity x) (Identity s)
+instance {-# OVERLAPPING #-} LActMn x s => LActMn (Identity x) (Identity s)
+instance {-# OVERLAPPING #-} LActDistrib x s
+  => LActDistrib (Identity x) (Identity s)
+instance {-# OVERLAPPING #-} LActNeutral x s
+  => LActNeutral (Identity x) (Identity s)
+
+instance RAct x s => RAct x (Identity s) where
+  x $<> Identity s = x $<> s
+  {-# INLINE ($<>) #-}
+
+instance RActSg x s => RActSg x (Identity s)
+instance RActMn x s => RActMn x (Identity s)
+instance RActDistrib x s => RActDistrib x (Identity s)
+instance RActNeutral x s => RActNeutral x (Identity s)
 
 -- | Preserves action properties of @'LAct' x s@.
-instance RAct x s => RAct (Identity x) (Identity s) where
+instance {-# OVERLAPPING #-}  RAct x s => RAct (Identity x) (Identity s) where
   Identity x $<> Identity s = Identity (x $<> s)
 
-instance RActSg x s => RActSg (Identity x) (Identity s)
-instance RActMn x s => RActMn (Identity x) (Identity s)
-instance RActDistrib x s => RActDistrib (Identity x) (Identity s)
-instance RActNeutral x s => RActNeutral (Identity x) (Identity s)
+instance {-# OVERLAPPING #-} RActSg x s => RActSg (Identity x) (Identity s)
+instance {-# OVERLAPPING #-} RActMn x s => RActMn (Identity x) (Identity s)
+instance {-# OVERLAPPING #-} RActDistrib x s
+  => RActDistrib (Identity x) (Identity s)
+instance {-# OVERLAPPING #-} RActNeutral x s
+  => RActNeutral (Identity x) (Identity s)
 
 ------------------------- Instances for Data.Semigroup -------------------------
 

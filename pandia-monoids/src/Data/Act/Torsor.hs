@@ -1,5 +1,6 @@
 {-# LANGUAGE MultiParamTypeClasses  #-}
 {-# LANGUAGE FlexibleInstances      #-}
+{-# LANGUAGE ScopedTypeVariables    #-}
 
 --------------------------------------------------------------------------------
 -- |
@@ -23,7 +24,11 @@ module Data.Act.Torsor
   )
 where
 
+import Data.Coerce
+import Data.Functor.Identity
 import Data.Monoid
+
+import Data.Group
 
 import Data.Act
 
@@ -66,11 +71,46 @@ class LActGp x g => LTorsor x g where
   infix 6 .-.
   {-# INLINE (.-.) #-}
 
+
+instance LTorsor x () where
+  ldiff _ _ = ()
+  {-# INLINE ldiff #-}
+
+instance LTorsor x g => LTorsor x (Identity g) where
+  ldiff y x = Identity (ldiff y x)
+  {-# INLINE ldiff #-}
+
+instance (LTorsor x g, LTorsor y h) => LTorsor (x, y) (g,h) where
+  ldiff (y1, y2) (x1, x2) = (ldiff y1 x1, ldiff y2 x2)
+  {-# INLINE ldiff #-}
+
+instance {-# OVERLAPPING #-} LTorsor x g
+  => LTorsor (Identity x) (Identity g) where
+  ldiff (Identity y) (Identity x) = Identity (ldiff y x)
+  {-# INLINE ldiff #-}
+
+
+instance Group g => LTorsor g (ActSelf g) where
+  ldiff y x = ActSelf (y ~~ x)
+  {-# INLINE ldiff #-}
+
+instance (Group g, Coercible x g) => LTorsor x (ActSelf' g) where
+  ldiff y x = ActSelf' ((coerce y :: g) ~~ (coerce x :: g))
+  {-# INLINE ldiff #-}
+
+
+instance RTorsor x g => LTorsor x (Dual g) where
+  ldiff y x = Dual (rdiff y x)
+  {-# INLINE ldiff #-}
+
 instance Num x => LTorsor x (Sum x) where
   ldiff y x = Sum (y - x)
+  {-# INLINE ldiff #-}
 
 instance Fractional x => LTorsor x (Product x) where
   ldiff y x = Product (y / x)
+  {-# INLINE ldiff #-}
+
 
 
 -- | A right group torsor.
@@ -104,9 +144,40 @@ class RActGp x g => RTorsor x g where
   infix 6 .~.
   {-# INLINE (.~.) #-}
 
+instance RTorsor x () where
+  rdiff _ _ = ()
+  {-# INLINE rdiff #-}
+
+instance RTorsor x g => RTorsor x (Identity g) where
+  rdiff y x = Identity (rdiff y x)
+  {-# INLINE rdiff #-}
+
+instance {-# OVERLAPPING #-} RTorsor x g
+  => RTorsor (Identity x) (Identity g) where
+  rdiff (Identity y) (Identity x) = Identity (rdiff y x)
+  {-# INLINE rdiff #-}
+
+instance (RTorsor x g, RTorsor y h) => RTorsor (x, y) (g,h) where
+  rdiff (y1, y2) (x1, x2) = (rdiff y1 x1, rdiff y2 x2)
+  {-# INLINE rdiff #-}
+
+instance Group g => RTorsor g (ActSelf g) where
+  rdiff y x = ActSelf (y ~~ x)
+  {-# INLINE rdiff #-}
+
+instance (Group g, Coercible x g) => RTorsor x (ActSelf' g) where
+  rdiff y x = ActSelf' ((coerce y :: g) ~~ (coerce x :: g))
+  {-# INLINE rdiff #-}
+
+instance LTorsor x g => RTorsor x (Dual g) where
+  rdiff y x = Dual (ldiff y x)
+  {-# INLINE rdiff #-}
+
 instance Num x => RTorsor x (Sum x) where
   rdiff y x = Sum (y - x)
+  {-# INLINE rdiff #-}
 
 instance Fractional x => RTorsor x (Product x) where
   rdiff y x = Product (y / x)
+  {-# INLINE rdiff #-}
 
