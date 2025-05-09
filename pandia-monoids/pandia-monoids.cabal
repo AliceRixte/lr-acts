@@ -32,6 +32,7 @@ library
       Data.Act.Generated
       Data.Semidirect
       Data.Semidirect.Lazy
+      Data.Semidirect.Strict
       Data.Shiftable
       Test
   other-modules:
