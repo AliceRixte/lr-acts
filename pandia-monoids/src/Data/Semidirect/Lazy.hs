@@ -10,21 +10,41 @@
 --   License     :  BSD 3 (see LICENSE)
 --   Maintainer  :  alice.rixte@u-bordeaux.fr
 --
--- Semidirect products
+-- Semidirect products for left and right actions.
+--
+-- For a strict version, see @'Data.Semidirect.Strict'@.
+--
+-- [Usage :]
+--
+-- >>> import Data.Semigroup
+-- >>> LSemidirect (Sum 1) (Product 2) <> LSemidirect (Sum (3 :: Int)) (Product (4 :: Int))
+-- LSemidirect {lactee = Sum {getSum = 7}, lactor = Product {getProduct = 8}}
+--
+-- [Property checking :]
+--
+-- There is a @'Semigroup'@ instance for @'LSemidirect'@ (resp. @'RSemidirect'@)
+-- only if there is a @'LActSgMorph'@ (resp. @'RActSgMorph'@) instance. For
+-- example, @'Sum' Int@ acting on itself is not an semigroup action by morphism
+-- and therefore the semidirect product is not associative :
+--
+-- >>> LSemidirect (Sum 1) (Sum 2) <> LSemidirect (Sum (3 :: Int)) (Sum (4 :: Int))
+-- No instance for `LActDistrib (Sum Int) (Sum Int)'
+--   arising from a use of `<>'
+--
 -----------------------------------------------------------------------------
 
 module Data.Semidirect.Lazy
        ( LSemidirect (..)
        , lerase
        , lforget
-       , lfromActee
-       , lfromActor
+       , lembedActee
+       , lembedActor
        , lfromPair
         , RSemidirect (..)
         , rerase
         , rforget
-        , rfromActee
-        , rfromActor
+        , rembedActee
+        , rembedActor
         , rfromPair
        ) where
 
@@ -54,23 +74,23 @@ instance Bifunctor LSemidirect where
   first f a = a {lactee = f (lactee a)}
   second = fmap
 
--- |  Erases the element being acted on (i.e. replace it with @mempty@).
+-- |  Erases the actee (i.e. replace it with @mempty@).
 lerase :: Monoid x => LSemidirect x s -> LSemidirect x s
 lerase a = a {lactee = mempty}
 
--- |  Forget the acting element (i.e. replace it with @mempty@).
+-- |  Forget the actor (i.e. replace it with @mempty@).
 lforget :: Monoid s => LSemidirect x s -> LSemidirect x s
 lforget a =a {lactor = mempty}
 
--- |  Make a semidirect pair out whose actee element is @mempty@.
-lfromActor :: Monoid x => s -> LSemidirect x s
-lfromActor s = LSemidirect mempty s
+-- |  Make a semidirect pair whose actee is @mempty@.
+lembedActor :: Monoid x => s -> LSemidirect x s
+lembedActor s = LSemidirect mempty s
 
--- |  Make a semidirect pair out whose actor element is @mempty@ .
-lfromActee :: Monoid s => x -> LSemidirect x s
-lfromActee x = LSemidirect x mempty
+-- |  Make a semidirect pair whose actor is @mempty@.
+lembedActee :: Monoid s => x -> LSemidirect x s
+lembedActee x = LSemidirect x mempty
 
--- | Converts a pair into a semidirect product element
+-- | Converts a pair into a semidirect product element.
 lfromPair :: (x,s) -> LSemidirect x s
 lfromPair (x,s) = LSemidirect x s
 
@@ -100,21 +120,21 @@ instance Bifunctor RSemidirect where
   first f a = a {ractee = f (ractee a)}
   second = fmap
 
--- |  Erases the element being acted on (i.e. replace it with @mempty@).
+-- |  Erases the actee (i.e. replace it with @mempty@).
 rerase :: Monoid x => RSemidirect x s -> RSemidirect x s
 rerase a = a {ractee = mempty}
 
--- |  Forget the acting element (i.e. replace it with @mempty@).
+-- |  Forget the actor (i.e. replace it with @mempty@).
 rforget :: Monoid s => RSemidirect x s -> RSemidirect x s
 rforget a = a {ractor = mempty}
 
--- |  Make a semidirect pair out whose actee element is @mempty@.
-rfromActor :: Monoid x => s -> RSemidirect x s
-rfromActor s = RSemidirect mempty s
+-- |  Make a semidirect pair whose actee is @mempty@.
+rembedActor :: Monoid x => s -> RSemidirect x s
+rembedActor s = RSemidirect mempty s
 
--- |  Make a semidirect pair out whose actor element is @mempty@ .
-rfromActee :: Monoid s => x -> RSemidirect x s
-rfromActee x = RSemidirect x mempty
+-- |  Make a semidirect pair whose actor element is @mempty@ .
+rembedActee :: Monoid s => x -> RSemidirect x s
+rembedActee x = RSemidirect x mempty
 
 -- | Converts a pair into a semidirect product element
 rfromPair :: (x,s) -> RSemidirect x s
