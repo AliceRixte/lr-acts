@@ -102,6 +102,7 @@ module Data.Act
   ( LAct (..)
   , LActSg
   , LActMn
+  , LActGp
   , LActDistrib
   , LActSgMorph
   , LActNeutral
@@ -109,6 +110,7 @@ module Data.Act
   , RAct (..)
   , RActSg
   , RActMn
+  , RActGp
   , RActDistrib
   , RActSgMorph
   , RActNeutral
@@ -123,6 +125,7 @@ module Data.Act
 
 import Data.Semigroup as S
 import Data.Monoid as M
+import Data.Group
 import Data.Functor.Identity
 import Data.Foldable
 import Data.Coerce
@@ -158,13 +161,16 @@ class LAct x s where
   lact :: s -> x -> x
   lact = (<>$)
   {-# INLINE lact #-}
-  infixr 7 `lact`
+  infixr 5 `lact`
 
   -- | Infix synonym or @'lact'@
+  --
+  -- The acting part is on the right of the operator (symbolized by @<>@) and
+  -- the actee on the right (symbolized by @$@), hence the notation @<>$@
   (<>$) :: s -> x -> x
   (<>$) = lact
   {-# INLINE (<>$) #-}
-  infixr 7 <>$
+  infixr 5 <>$
 
 -- | A left semigroup action
 --
@@ -182,6 +188,10 @@ class (LAct x s, Semigroup s) => LActSg x s
 -- @ 'mempty' <>$ x == x @
 --
 class (LActSg x s, Monoid s) => LActMn x s
+
+-- | A left action of groups. No additional laws are needed.
+--
+type LActGp x s = (LActMn x s, Group s)
 
 
 -- | A left distributive action
@@ -230,13 +240,17 @@ class RAct x s where
   ract :: x -> s -> x
   ract = ($<>)
   {-# INLINE ract #-}
-  infixl 7 `ract`
+  infixl 5 `ract`
 
   -- | Infix synonym or @'ract'@
+  --
+  -- The acting part is on the right of the operator (symbolized by @<>@) and
+  -- the actee on the left (symbolized by @$@), hence the notation @$<>$@.
+  --
   ($<>) :: x -> s -> x
   ($<>) = ract
   {-# INLINE ($<>) #-}
-  infixl 7 $<>
+  infixl 5 $<>
 
 
 -- | A right semigroup action
@@ -255,6 +269,10 @@ class (RAct x s, Semigroup s) => RActSg x s
 -- @ x $<> 'mempty' == x @
 --
 class (RActSg x s, Monoid s) => RActMn x s
+
+-- | A left action of groups. No additional laws are needed.
+--
+type RActGp x s = (RActMn x s, Group s)
 
 -- | A right distributive action
 --

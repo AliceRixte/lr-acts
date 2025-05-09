@@ -30,6 +30,7 @@ library
   exposed-modules:
       Data.Act
       Data.Act.Generated
+      Data.Act.Torsor
       Data.Semidirect
       Data.Semidirect.Lazy
       Data.Semidirect.Strict
