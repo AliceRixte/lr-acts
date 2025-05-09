@@ -360,18 +360,9 @@ instance {-# OVERLAPPABLE #-} (Semigroup s, Coercible x s)
   ActSelf' s <>$ x = coerce $ s <> (coerce x :: s)
   {-# INLINE (<>$) #-}
 
+-- | Semigroup action (monoid action when @Monoid s@)
 instance (Coercible x s, Semigroup s) => LActSg x (ActSelf' s)
 instance (Coercible x s, Monoid s) => LActMn x (ActSelf' s)
-
--- | Semigroup action (monoid action when @Monoid s@)
--- instance {-# OVERLAPPABLE #-} (Semigroup s, Coercible x s)
---   => LAct x (ActSelf' s) where
---   ActSelf' s <>$ x = coerce $ s <> (coerce x :: s)
---   {-# INLINE (<>$) #-}
-
--- instance (Coercible x s, Semigroup s) => LActSg x (ActSelf' s)
--- instance (Coercible x s, Monoid s) => LActMn x (ActSelf' s)
-
 
 -- | Semigroup action (monoid action when @Monoid s@)
 instance {-# OVERLAPPABLE #-} (Semigroup s, Coercible x s)
