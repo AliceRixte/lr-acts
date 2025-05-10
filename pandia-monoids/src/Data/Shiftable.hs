@@ -35,7 +35,8 @@
 --------------------------------------------------------------------------------
 
 module Data.Shiftable
-  ( Shiftable (..)
+  (
+    Shift
   , Origin (..)
   , fromOrigin
   , maybeOrigin
@@ -103,6 +104,10 @@ maybeOrigin f a = fmap Just (f (fromMaybe origin a))
 
 ------------------------------------ Shift -------------------------------------
 
+type family Shift s
+
+
+
 -- | A set @x@ that can be lifted in some semigroup @s@.
 --
 -- Instances must satisfy the following law
@@ -128,24 +133,24 @@ maybeOrigin f a = fmap Just (f (fromMaybe origin a))
 
 
 
-class (LAct s (Shift s), Semigroup (Shift s)) => Shiftable s where
-  type Shift s
-  shift :: s -> Shift s
+-- class (LAct s (Shift s), Semigroup (Shift s)) => Shiftable s where
+--   type Shift s
+--   shift :: s -> Shift s
 
-instance Num x => Shiftable (Sum x) where
-  type Shift (Sum x) = Sum x
-  shift = id
-  {-# INLINE shift #-}
+-- instance Num x => Shiftable (Sum x) where
+--   type Shift (Sum x) = Sum x
+--   shift = id
+--   {-# INLINE shift #-}
 
-instance Num x => Shiftable (Product x) where
-  type Shift (Product x) = Product x
-  shift = id
-  {-# INLINE shift #-}
+-- instance Num x => Shiftable (Product x) where
+--   type Shift (Product x) = Product x
+--   shift = id
+--   {-# INLINE shift #-}
 
-instance Shiftable x => Shiftable (Identity x) where
-  type Shift (Identity x) = Identity (Shift x)
-  shift = coerce . shift
-  {-# INLINE shift #-}
+-- instance Shiftable x => Shiftable (Identity x) where
+--   type Shift (Identity x) = Identity (Shift x)
+--   shift = coerce . shift
+--   {-# INLINE shift #-}
 
 
 ------------------------------------------------------------------------------

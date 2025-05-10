@@ -69,7 +69,7 @@ import Data.Act
 -- newtype Duration a = Duration a
 --   deriving (Semigroup, Monoid) via (Sum a)
 --
-class LActGen x s where
+class LAct x s => LActGen x s where
   -- | The set of origins of the action @'LAct' x s@.
   --
   -- This is a subset of @x@, represented as its characteristic function,
@@ -149,7 +149,7 @@ origins = lgeneratorsList @s
 -- @x::x@ can be seen as an element @'lshift' x :: s@ such that @'lshift' x <>$
 -- lorigin == x@
 --
-class LActCyclic x s where
+class LAct x s => LActCyclic x s where
   -- | The only generator of the action @LAct x s@.
   --
   -- >>> lorigin' @Int @(Sum Int)
@@ -210,7 +210,7 @@ lorigin = lorigin' @x @s
 -- 2. 'fst' ('rshiftFromGen' x) $<> 'snd' @('rshiftFromGen' x) == x@
 -- 3. 'rgenerators' @x == x `'elem'` 'rgeneratorsList' x@
 --
-class RActGen x s where
+class RAct x s => RActGen x s where
   -- | The set of origins of the action @'RAct' x s@.
   --
   -- This is a subset of @x@, represented as its characteristic function,
@@ -281,7 +281,7 @@ rorigins' = rgeneratorsList @s
 {-# INLINE rorigins' #-}
 
 
-class RActCyclic x s where
+class RAct x s => RActCyclic x s where
   -- | The only generator of the action @RAct x s@.
   --
   -- >>> rorigin' @(Sum Int) :: Int
