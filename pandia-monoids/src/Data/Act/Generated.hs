@@ -149,7 +149,7 @@ origins = lgeneratorsList @s
 -- @x::x@ can be seen as an element @'lshift' x :: s@ such that @'lshift' x <>$
 -- lorigin == x@
 --
-class LActGen x s => LActCyclic x s where
+class LActCyclic x s where
   -- | The only generator of the action @LAct x s@.
   --
   -- >>> lorigin' @Int @(Sum Int)
@@ -281,7 +281,7 @@ rorigins' = rgeneratorsList @s
 {-# INLINE rorigins' #-}
 
 
-class RActGen x s => RActCyclic x s where
+class RActCyclic x s where
   -- | The only generator of the action @RAct x s@.
   --
   -- >>> rorigin' @(Sum Int) :: Int
