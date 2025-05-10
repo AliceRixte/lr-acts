@@ -8,7 +8,7 @@
 -- Module      :  Data.Act
 -- Description :  Group torsors for left and right actions.
 -- Copyright   :  (c) Alice Rixte 2025
--- License     :  LGPL 3
+-- License     :  BSD 3
 -- Maintainer  :  alice.rixte@u-bordeaux.fr
 -- Stability   :  unstable
 -- Portability :  non-portable (GHC extensions)
@@ -30,7 +30,7 @@ import Data.Monoid
 
 import Data.Group
 
-import Data.Act
+import Data.Act.Act
 
 -- | A left group torsor.
 --
