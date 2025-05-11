@@ -9,3 +9,4 @@ bench.html
 *.prof
 .code-workspace
 Makefile
+lr-acts.cabal
