@@ -8,3 +8,4 @@ dist-newstyle
 bench.html
 *.prof
 .code-workspace
+Makefile
