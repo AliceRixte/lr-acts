@@ -35,7 +35,6 @@ library
       Data.Semidirect
       Data.Semidirect.Lazy
       Data.Semidirect.Strict
-      Data.Shiftable
   other-modules:
       Paths_pandia_monoids
   hs-source-dirs:
