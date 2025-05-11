@@ -1,6 +1,6 @@
-name:                pandia-monoids
+name:                lr-acts
 version:             0.0.0
-github:              "AliceRixte/pandia/pandia-monoids"
+github:              "AliceRixte/pandia/lr-acts"
 license:             BSD3
 author:              "Alice Rixte"
 maintainer:          "alice.rixte@u-bordeaux.fr"
@@ -17,7 +17,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/AliceRixte/pandia/blob/main/pandia-monoids#readme>
+description:         Please see the README on GitHub at <https://github.com/AliceRixte/pandia/blob/main/lr-acts#readme>
 
 dependencies:
 - base >= 4.18 && < 5
@@ -50,10 +50,10 @@ library:
   source-dirs: src
 
 tests:
-  pandia-monoids-test:
+  lr-acts-test:
     main:                Spec.hs
     dependencies:
-    - pandia-monoids
+    - lr-acts
     - hspec >= 2.11
     - QuickCheck >= 2.14.3
     source-dirs:         test
@@ -63,10 +63,10 @@ tests:
       - -with-rtsopts=-N
 
 benchmarks:
-  pandia-monoids-bench:
+  lr-acts-bench:
     main: Main.hs
     dependencies:
-      - pandia-monoids
+      - lr-acts
       - criterion >= 1.6
     source-dirs: benchmark
     ghc-options:
@@ -76,7 +76,7 @@ benchmarks:
   monoid-list:
     main: monoid-list.hs
     dependencies:
-      - pandia-monoids
+      - lr-acts
       - monoid-extras
       - criterion >= 1.6
     source-dirs: benchmark
