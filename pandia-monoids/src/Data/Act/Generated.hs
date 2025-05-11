@@ -39,6 +39,10 @@ newtype Shiftable x s = Shiftable x
   deriving (Eq, Ord, Show, Read)
   deriving newtype (Num, Fractional, Real, RealFrac, Enum)
 
+unshift :: Shiftable x s -> x
+unshift = coerce
+
+
 
 
 
