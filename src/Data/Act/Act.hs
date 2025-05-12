@@ -348,8 +348,9 @@ instance Monoid s => RActMn s (ActSelf s)
 --
 -- newtype Seconds = Seconds Float
 --
--- newtype Duration = Duration Seconds deriving ('Semigroup', 'Monoid', 'Group')
---   via ('Sum' Float) deriving ('LAct' Seconds) via ('ActSelf'' ('Sum' Float))
+-- newtype Duration = Duration Seconds
+--   deriving ('Semigroup', 'Monoid', 'Group') via ('Sum' Float)
+--   deriving ('LAct' Seconds) via ('ActSelf'' ('Sum' Float))
 --   @
 newtype ActSelf' x = ActSelf' {unactCoerce :: x}
   deriving stock (Show, Eq)
