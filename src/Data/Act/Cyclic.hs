@@ -142,7 +142,7 @@ lorigin = lorigin' @x @s
 class RAct x s => RActCyclic x s where
   -- | The only generator of the action @RAct x s@.
   --
-  -- >>> rorigin' @(Sum Int) :: Int
+  -- >>> rorigin' @Int @(Sum Int) :: Int
   -- 0
   --
   -- To avoid having to use the redundant first type aplication, use
