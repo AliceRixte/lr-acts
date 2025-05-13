@@ -24,13 +24,13 @@
 --------------------------------------------------------------------------------
 
 
-module Data.Act.Generated where
+module Data.Act.Cyclic where
 
 import Data.Bifunctor
 import Data.Functor.Identity
 import Data.Coerce
 import Data.Semigroup as Sg
-import Data.Monoid as Mn
+
 
 
 import Data.Act.Act
