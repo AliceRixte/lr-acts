@@ -2,6 +2,9 @@
 
 [![Haskell](https://img.shields.io/badge/language-Haskell-orange.svg)](https://haskell.org) [![Hackage](https://img.shields.io/hackage/v/lr-acts.svg)](https://hackage.haskell.org/package/lr-acts)  [![BSD3 License](https://img.shields.io/badge/license-BSD3-blue.svg)](https://github.com/AliceRixte/lr-acts/LICENSE)
 
+
+## Features
+
 * Left and right actions of
   * sets
   * semigroup
@@ -12,7 +15,6 @@
 * Cyclic actions
 * Generated actions
 
-## Features
 
 ### Fine-grained class hierarchy
 
@@ -86,9 +88,9 @@ No instance for `LActDistrib (Sum Int) (Sum Int)'
   arising from a use of `<>'
 ```
 
-## Comparison with other action libraris
+## Comparison with other action libraries
 
-Here is a list of action libraris on hackage :
+Here is a list of action libraries on hackage :
 
 - [monoid-extra](https://github.com/diagrams/monoid-extras)
 - [acts](https://hackage.haskell.org/package/acts)
