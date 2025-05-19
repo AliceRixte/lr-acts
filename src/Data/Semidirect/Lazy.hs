@@ -5,10 +5,13 @@
 
 -----------------------------------------------------------------------------
 -- |
---   Module      :  Data.Semigroup.Semidirect.Lazy
---   Copyright   :  (c) Alice Rixte (2024)
---   License     :  BSD 3 (see LICENSE)
---   Maintainer  :  alice.rixte@u-bordeaux.fr
+-- Module      : Data.Semidirect.Lazy
+-- Description : Lazy semidirect products
+-- Copyright   : (c) Alice Rixte 2025
+-- License     : BSD 3
+-- Maintainer  : alice.rixte@u-bordeaux.fr
+-- Stability   : unstable
+-- Portability : non-portable (GHC extensions)
 --
 -- Semidirect products for left and right actions.
 --
