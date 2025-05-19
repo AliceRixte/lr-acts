@@ -52,7 +52,8 @@
 -- @
 -- {-# LANGUAGE DerivingVia #-}
 --
--- import Data.Act import Data.Semigroup
+-- import Data.Act
+-- import Data.Semigroup
 --
 -- newtype Seconds = Seconds Float
 --
