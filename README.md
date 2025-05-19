@@ -1,5 +1,7 @@
 # lr-acts
 
+[![Haskell](https://img.shields.io/badge/language-Haskell-orange.svg)](https://haskell.org) [![Hackage](https://img.shields.io/hackage/v/lr-acts.svg)](https://hackage.haskell.org/package/lr-acts)  [![BSD3 License](https://img.shields.io/badge/license-BSD3-blue.svg)](https://github.com/AliceRixte/lr-acts/LICENSE)
+
 * Left and right actions of
   * sets
   * semigroup
@@ -66,7 +68,9 @@ ghci> Durations [Duration 2, Duration 3] `lact` Seconds 4
 Seconds 9.0
 ```
 
-* This fine-grained hierarchy allows to check for associativity and existence of neutral elements using _semidirect products_.
+### Semidirect products
+
+This fine-grained hierarchy allows to check for associativity and existence of neutral elements using _semidirect products_.
 
 ``` haskell
 >>> import Data.Semigroup
