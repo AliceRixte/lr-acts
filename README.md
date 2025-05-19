@@ -1,6 +1,14 @@
 # lr-acts
 
-Left and right actions of semigroup, monoids and groups. Semidirect product, group torsors and cyclic actions.
+* Left and right actions of
+  * sets
+  * semigroup
+  * monoids
+  * groups
+* Semidirect product
+* Group torsors
+* Cyclic actions
+* Generated actions
 
 ## Features
 
