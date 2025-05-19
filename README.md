@@ -21,7 +21,7 @@
 Left and right actions with a fine-grained class hierarchy for action properties. For left actions, here are the provided classes :
 
 ``` haskell
-class LAct                     -- Set action
+class LAct               -- Set action
  => LActSg               -- Semigroup action
      => LActMn           -- Monoid action
           => LTorsor     -- Torsor
