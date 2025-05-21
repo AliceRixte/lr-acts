@@ -96,6 +96,9 @@ import Data.Bifunctor
 import Data.Functor.Identity
 import Data.Coerce
 import Data.Semigroup as Sg
+import Data.Monoid as Mn
+
+import Data.Default
 
 
 
@@ -466,5 +469,21 @@ instance Num x => RActCyclic (Sum x) (Product x) where
   rshift = coerce
   {-# INLINE rshift #-}
 
+-- First --
 
+instance Default x => LActCyclic x (Sg.First x) where
+  lorigin' = def
+  lshift = Sg.First
+
+instance Default x => LActCyclic x (Mn.First x) where
+  lorigin' = def
+  lshift = Mn.First . Just
+
+instance Default x => RActCyclic x (Sg.Last x) where
+  rorigin' = def
+  rshift = Sg.Last
+
+instance Default x => RActCyclic x (Mn.Last x) where
+  rorigin' = def
+  rshift = Mn.Last . Just
 

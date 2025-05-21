@@ -86,8 +86,8 @@ module Data.Act.Act
   , ActSelf' (..)
 ) where
 
-import Data.Semigroup as S
-import Data.Monoid as M
+import Data.Semigroup as Sg
+import Data.Monoid as Mn
 import Data.Group
 import Data.Functor.Identity
 import Data.Foldable
@@ -727,33 +727,33 @@ instance RActSg Bool All
 instance RActMn Bool All
 
 -- | Semigroup action
-instance LAct x (S.First x) where
+instance LAct x (Sg.First x) where
   (<>$) s = coerce (s <>)
   {-# INLINE (<>$) #-}
 
-instance LActSg x (S.First x)
+instance LActSg x (Sg.First x)
 
 -- | Semigroup action
-instance RAct x (S.Last x) where
+instance RAct x (Sg.Last x) where
   x $<> s = coerce $ coerce x <> s
   {-# INLINE ($<>) #-}
 
-instance RActSg x (S.Last x)
+instance RActSg x (Sg.Last x)
 
 -- | Monoid action
-instance LAct x (M.First x) where
-  M.First Nothing <>$ x = x
-  M.First (Just s) <>$ _ = s
+instance LAct x (Mn.First x) where
+  Mn.First Nothing <>$ x = x
+  Mn.First (Just s) <>$ _ = s
   {-# INLINE (<>$) #-}
 
-instance LActSg x (M.First x)
-instance LActMn x (M.First x)
+instance LActSg x (Mn.First x)
+instance LActMn x (Mn.First x)
 
 -- | Monoid action
-instance RAct x (M.Last x) where
-  x $<> M.Last Nothing = x
-  _ $<> M.Last (Just s) = s
+instance RAct x (Mn.Last x) where
+  x $<> Mn.Last Nothing = x
+  _ $<> Mn.Last (Just s) = s
   {-# INLINE ($<>) #-}
 
-instance RActSg x (M.Last x)
-instance RActMn x (M.Last x)
+instance RActSg x (Mn.Last x)
+instance RActMn x (Mn.Last x)
