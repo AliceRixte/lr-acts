@@ -1,4 +1,4 @@
-# Changelog for `tiles`
+# Changelog for `lr-acts`
 
 All notable changes to this project will be documented in this file.
 
@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the
 [Haskell Package Versioning Policy](https://pvp.haskell.org/).
 
-## Unreleased
+## 0.0 - 2025-05-22
 
-## 0.1.0.0 - YYYY-MM-DD
+### Added
+
+- Left and right actions
+- Semigroup, monoid and group actions
+- Cyclic and generated actions
+- Torsors
+- Semidirect products
