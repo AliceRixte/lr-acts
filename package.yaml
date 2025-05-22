@@ -1,18 +1,18 @@
-name:                lr-acts
-version:             0.0.0
-github:              "AliceRixte/pandia/lr-acts"
-license:             BSD3
-author:              "Alice Rixte"
-maintainer:          "alice.rixte@u-bordeaux.fr"
-copyright:           "BSD3"
+name:                 lr-acts
+version:              0.0.0
+github:               "AliceRixte/lr-acts"
+license:              BSD-3-Clause
+author:               "Alice Rixte"
+maintainer:           "alice.rixte@u-bordeaux.fr"
+category:             Algebra, Math, Data
+synopsis:             Left and right actions, semidirect products and torsors
 
 extra-source-files:
 - README.md
+
+extra-doc-files:
 - CHANGELOG.md
 
-# Metadata used when publishing your package
-# synopsis:            Short description of your package
-# category:            media
 
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
