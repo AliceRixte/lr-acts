@@ -2,58 +2,37 @@ module Main (main) where
 
 import Criterion.Main
 
-import Data.Semigroup.Semidirect.Lazy as L
--- import Data.Semigroup.Semidirect.Strict as S
-import Data.Act
+import Data.Semidirect.Lazy as L
+import Data.Semidirect.Strict as S
 
 import Data.Monoid
 import Data.Semigroup
 
--- stimesSemiL :: Int -> L.LSemidirect (Sum Int) (Product Int)
--- stimesSemiL n = stimes n (L.lfromPair (Sum (1::Int), Product (1::Int)))
+stimesLSemiLazy :: Int -> Sum Int
+stimesLSemiLazy n =   L.lactee $ stimes n
+    (L.LSemidirect (Sum 1) (Product 2) :: L.LSemidirect (Sum Int) (Product Int))
 
--- stimesSemiS :: Int -> S.LSemidirect (Sum Int) (Cayley (Sum Int))
--- stimesSemiS n = stimes n (S.lfromPair (Sum (1::Int), Cayley (Sum (1::Int))))
+stimesLSemiStrict :: Int -> Sum Int
+stimesLSemiStrict n =
+  S.lactee $ stimes n
+    (S.LSemidirect (Sum 1) (Product 2) :: S.LSemidirect (Sum Int) (Product Int))
 
--- The strict version is twice slower than the lazy one. Why ?
----------------------------------------  ---------------------------------------
-blub :: Int  -> ()
-blub n = let s = sum [1..n] in
-  ()
+sumProduct :: Int  -> (Sum Int, Product Int)
+sumProduct n = stimes n (Sum 1, Product 2)
 
-blab :: Int  -> (Int, ())
-blab n = let s = sum [1..n] in
-  (s, ())
+mkBench f n = bench (show n) $ nf f n
 
-blob :: Int -> ()
-blob = snd . blab
+pow10list :: Int -> Int -> [Int]
+pow10list a b = [10 ^n | n <- [a..b]]
 
-blib :: Int -> ()
-blib n = [1..n] <>$ ()
+nlist  :: [Int]
+nlist = pow10list 1 4
+
 
 main :: IO ()
 main =
     defaultMain [
-    --   bgroup "Sum" [
-    --     bench "100" $   nf blib 100
-    --   , bench "1000" $  nf blib 1000
-    --   , bench "10000" $ nf blib 10000
-    --   ]
-    --  , bgroup "Sum" [
-    --     bench "100" $   nf blab 100
-    --   , bench "1000" $  nf blab 1000
-    --   , bench "10000" $ nf blab 10000
-    --   ]
-    -- , bgroup "Semidirect" [
-    --     bgroup "Lazy" [
-    --       bench "100"   $ whnf stimesSemiL 100
-    --     , bench "1000"  $ whnf stimesSemiL 1000
-    --     , bench "10000" $ whnf stimesSemiL 10000
-    --     ]
-      -- , bgroup "Strict" [
-      --     bench "100"   $ whnf stimesSemiS 100
-      --   , bench "1000"  $ whnf stimesSemiS 1000
-      --   , bench "10000" $ whnf stimesSemiS 10000
-      --   ]
-
+        bgroup "Lazy pair (,)"      (fmap (mkBench sumProduct)      nlist)
+      , bgroup "Lazy LSemidirect"   (fmap (mkBench stimesLSemiLazy) nlist)
+      , bgroup "Strict LSemidirect" (fmap (mkBench stimesLSemiStrict) nlist)
     ]

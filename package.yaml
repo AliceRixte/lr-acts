@@ -28,26 +28,11 @@ ghc-options:
   - -Wall
   - -threaded
 
-tested-with: GHC ==9.8.2
+tested-with: GHC == 9.8.2
 
 library:
   ghc-options:
-  - -O2
   - -fprint-potential-instances
-  # default-extensions:
-  # - GeneralizedNewtypeDeriving
-  # - FunctionalDependencies
-  # - MultiParamTypeClasses
-  # - FlexibleContexts
-  # - FlexibleInstances
-  # - StandaloneDeriving
-  # - ScopedTypeVariables
-  # - UndecidableInstances
-  # - MonoLocalBinds
-  # - DataKinds
-  # - TypeOperators
-  # - TypeFamilies
-  # - OverloadedLabels
   source-dirs: src
 
 tests:
@@ -59,7 +44,6 @@ tests:
     - QuickCheck >= 2.14.3
     source-dirs:         test
     ghc-options:
-      - -O0
       - -rtsopts
       - -with-rtsopts=-N
 
@@ -71,17 +55,6 @@ benchmarks:
       - criterion >= 1.6
     source-dirs: benchmark
     ghc-options:
-      - -O2
-      - -rtsopts
-      - -with-rtsopts=-N
-  monoid-list:
-    main: monoid-list.hs
-    dependencies:
-      - lr-acts
-      - monoid-extras
-      - criterion >= 1.6
-    source-dirs: benchmark
-    ghc-options:
-      - -O2
+      # - -O2  no difference between O2 and O0
       - -rtsopts
       - -with-rtsopts=-N
