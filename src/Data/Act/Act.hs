@@ -10,7 +10,7 @@
 -- |
 --
 -- Module      :  Data.Act.Act
--- Description :  Actions of sets, semigroups, monoids or groups.
+-- Description :  Actions of sets, semigroups, monoids and groups.
 -- Copyright   :  (c) Alice Rixte 2024
 -- License     :  BSD 3
 -- Maintainer  :  alice.rixte@u-bordeaux.fr
@@ -79,11 +79,11 @@ module Data.Act.Act
   , RActMnMorph
   -- * Newtypes for instance derivation
   , ActSelf (..)
-  , ActTrivial (..)
+  , ActSelf' (..)
   , ActMap (..)
   , ActFold (..)
   , ActFold' (..)
-  , ActSelf' (..)
+  , ActTrivial (..)
 ) where
 
 import Data.Semigroup as Sg
@@ -97,17 +97,12 @@ import Data.Coerce
 -- | A left action of a set @s@ on another set @x@ is a function that maps
 -- elements of @s@ to functions on @x@.
 --
--- There are no additional laws for this class to satisfy. This is because there
--- are too many action properties and specify them explicitly via a type classes
--- quickly becomes a burden. However, every LAct instance should come with a
--- comment expliciting which property it satisfied. More on this in this
--- module's introduction.
+-- There are no additional laws for this class to satisfy.
 --
 -- The order @'LAct'@'s arguments is counter intuitive : even though we write
 -- left actions as @s <>$ x@, we declare the constraint as @LAct x s@. The
 -- reason for this is to be able to derive instances of @LAct@ while driving the
--- instances by the acting type. See the comparison with the @acts@ library for
--- more explanations on this design choice.
+-- instances by the acting type.
 --
 -- Instances of @LAct@ are driven by the second parameter (the acting type).
 -- Concretely, this means you should never write instances of the form
@@ -197,6 +192,8 @@ type LActMnMorph x s = (LActMn x s, LActSgMorph x s, LActNeutral x s)
 
 -- | A right action of a set @s@ on another set @x@.
 --
+-- There are no additional laws for this class to satisfy.
+--
 class RAct x s where
   {-# MINIMAL ract | ($<>) #-}
   -- | Act on the right of some element of @x@
@@ -208,7 +205,7 @@ class RAct x s where
   -- | Infix synonym or @'ract'@
   --
   -- The acting part is on the right of the operator (symbolized by @<>@) and
-  -- the actee on the left (symbolized by @$@), hence the notation @$<>$@.
+  -- the actee on the left (symbolized by @$@), hence the notation @$<>@.
   --
   ($<>) :: x -> s -> x
   ($<>) = ract
@@ -277,6 +274,10 @@ type RActMnMorph x s = (RActMn x s, RActSgMorph x s, RActNeutral x s)
 --
 -- Notice that whenever there is an instance @LAct x s@ with @x@ different from
 -- @s@, this action is lifted to an @ActSelf@ action.
+--
+-- >>> ActSelf "Hello" <>$ " World !"
+-- "Hello World !"
+--
 newtype ActSelf s = ActSelf {unactSelf :: s}
   deriving stock (Show, Eq)
   deriving newtype (Semigroup, Monoid, Group)
@@ -306,14 +307,19 @@ instance Monoid s => RActMn s (ActSelf s)
 -- time. Here, @Seconds@ is not a semigroup and @Duration@ is a group that acts
 -- on time via the derived instance @LAct Seconds Duration@.
 --
--- @ import Data.Semigroup
+-- @
+-- import Data.Semigroup
 --
 -- newtype Seconds = Seconds Float
 --
 -- newtype Duration = Duration Seconds
 --   deriving ('Semigroup', 'Monoid', 'Group') via ('Sum' Float)
 --   deriving ('LAct' Seconds) via ('ActSelf'' ('Sum' Float))
---   @
+-- @
+--
+-- >>> Duration 2 <>$ Seconds 3
+-- Seconds 5.0
+--
 newtype ActSelf' x = ActSelf' {unactCoerce :: x}
   deriving stock (Show, Eq)
   deriving newtype (Semigroup, Monoid, Group)
@@ -324,7 +330,6 @@ instance {-# OVERLAPPABLE #-} (Semigroup s, Coercible x s)
   ActSelf' s <>$ x = coerce $ s <> (coerce x :: s)
   {-# INLINE (<>$) #-}
 
--- | Semigroup action (monoid action when @Monoid s@)
 instance (Coercible x s, Semigroup s) => LActSg x (ActSelf' s)
 instance (Coercible x s, Monoid s) => LActMn x (ActSelf' s)
 
@@ -339,6 +344,10 @@ instance (Coercible x s, Monoid s) => RActMn x (ActSelf' s)
 
 -- | The trivial action where any element of @s@ acts as the identity function
 -- on @x@
+--
+-- >>> ActTrivial "Hello !" <>$ "Hi !"
+-- " Hi !"
+
 newtype ActTrivial x = ActTrivial  {unactId :: x}
   deriving stock (Show, Eq)
   deriving newtype (Semigroup, Monoid, Group)
@@ -365,7 +374,9 @@ instance Monoid x => RActNeutral x (ActTrivial s)
 
 -- | An action on any functor that uses the @fmap@ function. For example :
 --
--- @'ActMap' ('ActSelf' \"Hello\") <>$ [\" World\", " !"]  == ["Hello World", "Hello !"]@
+-- >>> ActMap (ActSelf "Hello") <>$ [" World !", " !"]
+-- ["Hello World !","Hello !"]
+--
 newtype ActMap s = ActMap {unactMap :: s}
   deriving stock (Show, Eq)
   deriving newtype (Semigroup, Monoid, Group)
@@ -426,7 +437,8 @@ instance (Foldable f, RAct x s) => RAct x (ActFold (f s)) where
 -- A left action @(<>$)@ can be seen as an operator for the @'foldr'@ function,
 -- and a allowing to lift any action to some @'Foldable'@ container.
 --
--- >> ActFold' [Sum (1 :: Int), Sum 2, Sum 3] <>$ (4 :: Int) 10
+-- >>> ActFold' [Sum (1 :: Int), Sum 2, Sum 3] <>$ (4 :: Int)
+-- 10
 --
 newtype ActFold' s = ActFold' {unactFold' :: s}
   deriving stock (Show, Eq)
@@ -538,6 +550,7 @@ instance (RAct x s, RAct x t) => RAct x (Either s t) where
 
 -------------------- Instances for base library functors ---------------------
 
+-- | Preserves action properties of @'LAct' x s@.
 instance LAct x s => LAct x (Identity s) where
   Identity s <>$ x = s <>$ x
   {-# INLINE (<>$) #-}
@@ -559,6 +572,7 @@ instance {-# OVERLAPPING #-} LActDistrib x s
 instance {-# OVERLAPPING #-} LActNeutral x s
   => LActNeutral (Identity x) (Identity s)
 
+-- | Preserves action properties of @'RAct' x s@.
 instance RAct x s => RAct x (Identity s) where
   x $<> Identity s = x $<> s
   {-# INLINE ($<>) #-}

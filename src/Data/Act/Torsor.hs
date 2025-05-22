@@ -37,7 +37,8 @@ import Data.Act.Act
 -- The most well known example of a torsor is the particular case of an affine
 -- space where the group is the additive group of the vector space and the set
 -- is a set of points. Torsors are more general than affine spaces since they
--- don't enforce linearity.
+-- don't enforce linearity. Notice that 'LActDistrib' may correspond to a
+-- linearity condition if you need one.
 --
 -- See this nLab article for more information :
 -- https://ncatlab.org/nlab/show/torsor
@@ -45,7 +46,7 @@ import Data.Act.Act
 -- [In algebraic terms : ]
 --
 -- A left group action is a torsor if and only if for every pair @(x,y) :: (x,
--- x)@, there exist a unique group element @g :: g@ such that @g <>$ x = y@.
+-- x)@, there exists a unique group element @g :: g@ such that @g <>$ x = y@.
 --
 -- [In Haskell terms : ]
 --
@@ -118,7 +119,7 @@ instance Fractional x => LTorsor x (Product x) where
 -- [In algebraic terms : ]
 --
 -- A left group action is a torsor if and only if for every pair @(x,y) :: (x,
--- x)@, there exist a unique group element @g :: g@ such that @g <>$ x = y@.
+-- x)@, there exists a unique group element @g :: g@ such that @g <>$ x = y@.
 --
 -- [In Haskell terms : ]
 --

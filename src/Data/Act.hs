@@ -13,16 +13,14 @@
 --
 -- == Presentation
 --
--- Left and right actions of sets, semigroups, monoids. An action lifts an
--- element of some type @s@, which we in this documentation we will call the
--- /acting/ type ot the /actor/ into a function of another type @x@ which we
--- call the /actee/.
+-- An action lifts an element (the "/actor/") of some type @s@, the /acting/
+-- type, into a function of another type @x@ which we call the "/actee/".
 --
--- The class hierarchy for actions is fine grained, which means it is both
--- flexible and a bit cumbersome to deal with. This is because, for example, we
--- need specific properties on the action for a semidirect product to be a
--- semigroup or a monoid (see @'Data.Semidirect'@). Here is a tree summarizing
--- the class hierarchy and there laws:
+-- The class hierarchy for actions is fine-grained, which means it is flexible
+-- but sometimes cumbersome to deal with. In particular, this allows to specify
+-- specific properties on the action for a semidirect product to be a semigroup
+-- or a monoid (see @'Data.Semidirect'@). Here is a tree summarizing the class
+-- hierarchy and their laws:
 --
 -- @
 -- 'LAct'                     /Set action/
@@ -38,9 +36,9 @@
 --
 -- == Instances driven by the acting type
 --
--- The action classes do not have functional dependencies, which makes it pretty
+-- The action classes do not have functional dependencies, which can make it
 -- awkward to work with them. To avoid overlapping issues, this library chooses
--- to drive instances by the second parameter, i.e. to /NEVER/ write instances
+-- to drive instances by the second parameter, i.e. to _never_ write instances
 -- of the form
 --
 -- @
@@ -53,7 +51,7 @@
 -- provides some, such as @'ActSelf'@,  @'ActTrivial'@, @'ActSelf''@, @'ActFold''@
 -- and @'ActMap'@.
 --
--- == Design choices compared with existing libraries
+-- == Design choices compared to existing libraries
 --
 -- This library is inspired by the already existing action libraries.
 --
@@ -65,7 +63,7 @@
 --   does not provide a deriving mechanism. This library started as an extension
 --   of @monoid-extras@, but the design choices made it diverge from it.
 --
--- * The idea specifying action properties using empty classes comes from the
+-- * The idea of specifying action properties using empty classes comes from the
 --   @semigroups-actions@ library, which inspired some design of this library.
 --   This library offers everything @semigroups-actions@ offers, and more.
 --

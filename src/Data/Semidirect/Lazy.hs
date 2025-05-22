@@ -27,7 +27,7 @@
 --
 -- There is a @'Semigroup'@ instance for @'LSemidirect'@ (resp. @'RSemidirect'@)
 -- only if there is a @'LActSgMorph'@ (resp. @'RActSgMorph'@) instance. For
--- example, @'Sum' Int@ acting on itself is not an semigroup action by morphism
+-- example, @'Sum' Int@ acting on itself is not a semigroup action by morphism
 -- and therefore the semidirect product is not associative :
 --
 -- >>> LSemidirect (Sum 1) (Sum 2) <> LSemidirect (Sum (3 :: Int)) (Sum (4 :: Int))
@@ -123,7 +123,7 @@ instance Bifunctor RSemidirect where
   first f a = a {ractee = f (ractee a)}
   second = fmap
 
--- |  Erases the actee (i.e. replace it with @mempty@).
+-- |  Erase the actee (i.e. replace it with @mempty@).
 rerase :: Monoid x => RSemidirect x s -> RSemidirect x s
 rerase a = a {ractee = mempty}
 
@@ -139,6 +139,6 @@ rembedActor s = RSemidirect mempty s
 rembedActee :: Monoid s => x -> RSemidirect x s
 rembedActee x = RSemidirect x mempty
 
--- | Converts a pair into a semidirect product element
+-- | Convert a pair into a semidirect product element
 rfromPair :: (x,s) -> RSemidirect x s
 rfromPair (x,s) = RSemidirect x s
