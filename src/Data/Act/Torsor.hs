@@ -29,10 +29,8 @@
 -- newtype Duration = Duration Days
 --   deriving Show
 --   deriving (Semigroup, Monoid, Group) via Sum Int
---   deriving (LAct Days, LActSg Days, LActMn Days) via (ActSelf' (Sum Int))
---
--- instance LTorsor Days Duration where
---   Days d2 .-. Days d1 = Duration (Days (d2 - d1))
+--   deriving (LAct Days, LActSg Days, LActMn Days, LTorsor Days)
+--            via (ActSelf' (Sum Int))
 -- @
 --
 -- Now only @Duration@ can be added or subtracted together and not dates.
@@ -95,7 +93,7 @@ class LActGp x g => LTorsor x g where
   --
   -- This represents a point minus a point.
   --
-  (.-.) :: LTorsor x g => x -> x -> g
+  (.-.) :: x -> x -> g
   (.-.) = ldiff
   infix 6 .-.
   {-# INLINE (.-.) #-}
@@ -168,7 +166,7 @@ class RActGp x g => RTorsor x g where
   --
   -- This represents a point minus a point.
   --
-  (.~.) :: RTorsor x g => x -> x -> g
+  (.~.) :: x -> x -> g
   (.~.) = rdiff
   infix 6 .~.
   {-# INLINE (.~.) #-}

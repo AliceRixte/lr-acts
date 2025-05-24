@@ -15,3 +15,7 @@ and this project adheres to the
 - Cyclic and generated actions
 - Torsors
 - Semidirect products
+
+## 0.0.1 - 2024-05-24
+
+- Fix deriving mechanism for Torsor instances
