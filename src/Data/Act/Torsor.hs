@@ -5,7 +5,7 @@
 --------------------------------------------------------------------------------
 -- |
 --
--- Module      :  Data.Act
+-- Module      :  Data.Act.Torsor
 -- Description :  Group torsors for left and right actions.
 -- Copyright   :  (c) Alice Rixte 2025
 -- License     :  BSD 3
@@ -15,6 +15,34 @@
 --
 -- == Presentation
 --
+-- Torsors are sets for which the /differences/ between elements form a group.
+-- One good example is time : it does not make sense to add or substract two
+-- dates together so we should model these dates as a set (we keep this simple by using only days):
+--
+-- >>> newtype Days = Days Int
+--         deriving Show
+--
+-- But subtracting two dates together does makes sense. This is where LTorsor
+-- can become useful :
+--
+-- @
+-- newtype Duration = Duration Days
+--   deriving Show
+--   deriving (Semigroup, Monoid, Group) via Sum Int
+--   deriving (LAct Days, LActSg Days, LActMn Days) via (ActSelf' (Sum Int))
+--
+-- instance LTorsor Days Duration where
+--   Days d2 .-. Days d1 = Duration (Days (d2 - d1))
+-- @
+--
+-- Now only @Duration@ can be added or subtracted together and not dates.
+--
+-- >>> (Days 5 .-. Days 3 :: Duration) + (Days 7 .-. Days 5)
+-- Duration (Days 4)
+--
+--
+-- For a more details and examples see this
+-- [article](https://math.ucr.edu/home/baez/torsors.html)
 --
 --------------------------------------------------------------------------------
 
