@@ -56,6 +56,7 @@
 -- >>> Durations [Duration 2, Duration 3] <>$ Seconds 4
 -- Seconds 9.0
 --
+--
 --------------------------------------------------------------------------------
 
 module Data.Act.Act
@@ -97,7 +98,24 @@ import Data.Coerce
 -- | A left action of a set @s@ on another set @x@ is a function that maps
 -- elements of @s@ to functions on @x@.
 --
+--
 -- There are no additional laws for this class to satisfy.
+--
+-- One example of useful set action that is not a semigroup action is declared
+-- in this file :
+--
+-- @
+--  instance (LAct x s, LAct x t) => LAct x (Either s t) where
+--    Left  s <>$ x = s <>$ x
+--    Right s <>$ x = s <>$ x
+-- @
+--
+-- This is often useful when dealing with free monoids :
+--
+-- >>> ActFold [Right (Product (2 :: Int)) , Left (Sum (1 :: Int))] <>$ (2 :: Int)
+-- 6
+-- >>> (2 :: Int) $<> ActFold [Right (Product (2 :: Int)) , Left (Sum (1 :: Int))]
+-- 5
 --
 -- The order @'LAct'@'s arguments is counter intuitive : even though we write
 -- left actions as @s <>$ x@, we declare the constraint as @LAct x s@. The
