@@ -16,8 +16,9 @@
 -- == Presentation
 --
 -- Torsors are sets for which the /differences/ between elements form a group.
--- One good example is time : it does not make sense to add or substract two
--- dates together so we should model these dates as a set (we keep this simple by using only days):
+-- One good example is time : it does not make sense to add two dates together
+-- so we should model these dates as a set (we keep this simple by using only
+-- days):
 --
 -- >>> newtype Days = Days Int
 --         deriving Show
