@@ -28,7 +28,9 @@ ghc-options:
   - -Wall
   - -threaded
 
-tested-with: GHC == 9.8.2
+tested-with:
+  GHC == 9.8.2
+   || == 9.10.2
 
 library:
   ghc-options:
