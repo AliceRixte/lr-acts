@@ -353,6 +353,22 @@ rorigins = rgeneratorsList @s
 
 ---------------------------------- Instances -----------------------------------
 
+-- Unit --
+
+-- | @since lr-acts-0.0.2
+instance Default x => LActCyclic x () where
+  lorigin' = def
+  {-# INLINE lorigin' #-}
+  lshift _ = ()
+  {-# INLINE lshift #-}
+
+-- | @since lr-acts-0.0.2
+instance Default x => RActCyclic x () where
+  rorigin' = def
+  {-# INLINE rorigin' #-}
+  rshift _ = ()
+  {-# INLINE rshift #-}
+
 -- Identity --
 
 instance LActGen x s => LActGen (Identity x) (Identity s) where
