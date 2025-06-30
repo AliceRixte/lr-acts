@@ -19,3 +19,8 @@ and this project adheres to the
 ## 0.0.1 - 2024-05-24
 
 - Fix deriving mechanism for Torsor instances
+
+## 0.0.2 - unreleased
+
+- Instances for ActCyclic x ()
+- Add LDefault and RDefault newtypes for ActCyclic
