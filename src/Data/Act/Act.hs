@@ -559,12 +559,13 @@ instance (RActNeutral x1 s1, RActNeutral x2 s2) => RActNeutral (x1, x2) (s1, s2)
 instance (LAct x s, LAct x t) => LAct x (Either s t) where
   (Left  s) <>$ x = s <>$ x
   (Right s) <>$ x = s <>$ x
+  {-# INLINE (<>$) #-}
 
 -- | No additionnal properties. In particular this is _not_ a semigroup action.
 instance (RAct x s, RAct x t) => RAct x (Either s t) where
   x $<> (Left  s) = x $<> s
   x $<> (Right s) = x $<> s
-
+  {-# INLINE ($<>) #-}
 
 -------------------- Instances for base library functors ---------------------
 
