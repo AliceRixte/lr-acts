@@ -1,6 +1,7 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE TypeOperators    #-}
+{-# OPTIONS_GHC -ddump-to-file #-}
 
 module Main (main) where
 
@@ -37,7 +38,7 @@ mulDef n = lorigin @(LDefault (2 :% 3) Double) + mulDef (n-1)
 
 mulDouble :: Int -> Double
 mulDouble 0 = 0
-mulDouble n = 2/3 + mulDef (n-1)
+mulDouble n = 2/3 + mulDouble (n-1)
 
 
 

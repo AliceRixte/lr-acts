@@ -60,3 +60,4 @@ benchmarks:
       # - -O2  no difference between O2 and O0
       - -rtsopts
       - -with-rtsopts=-N
+      - -ddump-simpl
