@@ -392,6 +392,10 @@ rorigins = rgeneratorsList @s
 newtype LDefault k x = LDefault x
   deriving (Semigroup, LAct x, LActSg x) via (Sg.First x)
 
+instance Default a => LActCyclic a (LDefault () a) where
+  lorigin' = def
+  lshift = LDefault
+
 instance LActCyclic Bool (LDefault 'True Bool) where
   lorigin' = True
   lshift = LDefault
@@ -421,6 +425,10 @@ instance (Fractional a, KnownNat n, KnownNat m)
 --
 newtype RDefault (a :: k) x = RDefault x
   deriving (Semigroup, RAct x, RActSg x) via (Sg.Last x)
+
+instance Default a => RActCyclic a (RDefault () a) where
+  rorigin' = def
+  rshift = RDefault
 
 instance RActCyclic Bool (RDefault 'True Bool) where
   rorigin' = True
