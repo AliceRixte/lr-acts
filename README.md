@@ -1,10 +1,6 @@
 # lr-acts
 
-[![Haskell](https://img.shields.io/badge/language-Haskell-orange.svg)](https://haskell.org)  
-[![Nightly](https://www.stackage.org/package/lr-acts/badge/nightly)](https://www.stackage.org/nightly/package/lr-acts)
-[![LTS](https://www.stackage.org/package/lr-acts/badge/lts)](https://www.stackage.org/lts/package/lr-acts)
-[![Hackage](https://img.shields.io/hackage/v/lr-acts.svg)](https://hackage.haskell.org/package/lr-acts)  
-[![BSD3 License](https://img.shields.io/badge/license-BSD3-blue.svg)](https://github.com/AliceRixte/lr-acts/LICENSE)
+[![Haskell](https://img.shields.io/badge/language-Haskell-orange.svg)](https://haskell.org) [![Nightly](https://www.stackage.org/package/lr-acts/badge/nightly)](https://www.stackage.org/nightly/package/lr-acts) [![LTS](https://www.stackage.org/package/lr-acts/badge/lts)](https://www.stackage.org/lts/package/lr-acts) [![Hackage](https://img.shields.io/hackage/v/lr-acts.svg)](https://hackage.haskell.org/package/lr-acts) [![BSD3 License](https://img.shields.io/badge/license-BSD3-blue.svg)](https://github.com/AliceRixte/lr-acts/LICENSE)
 
 
 ## Features
