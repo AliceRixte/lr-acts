@@ -4,6 +4,7 @@ github:               "AliceRixte/lr-acts"
 license:              BSD-3-Clause
 author:               "Alice Rixte"
 maintainer:           "alice.rixte@u-bordeaux.fr"
+copyright:            "(c) Alice Rixte 2025"
 category:             Algebra, Math, Data
 synopsis:             Left and right actions, semidirect products and torsors
 
