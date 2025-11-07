@@ -1,14 +1,6 @@
 {-# LANGUAGE AllowAmbiguousTypes        #-}
-{-# LANGUAGE TypeApplications           #-}
-{-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE DefaultSignatures          #-}
-{-# LANGUAGE FlexibleInstances          #-}
-{-# LANGUAGE MultiParamTypeClasses      #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DerivingVia                #-}
-{-# LANGUAGE PolyKinds                  #-}
-{-# LANGUAGE DataKinds                  #-}
-{-# LANGUAGE TypeOperators              #-}
 
 --------------------------------------------------------------------------------
 -- |

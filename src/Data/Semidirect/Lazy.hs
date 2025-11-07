@@ -1,8 +1,3 @@
-{-# LANGUAGE FlexibleInstances            #-}
-{-# LANGUAGE MultiParamTypeClasses        #-}
-{-# LANGUAGE InstanceSigs                 #-}
-{-# LANGUAGE ScopedTypeVariables          #-}
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      : Data.Semidirect.Lazy

@@ -1,7 +1,3 @@
-{-# LANGUAGE MultiParamTypeClasses  #-}
-{-# LANGUAGE FlexibleInstances      #-}
-{-# LANGUAGE ScopedTypeVariables    #-}
-
 --------------------------------------------------------------------------------
 -- |
 --

@@ -1,5 +1,4 @@
 {-# LANGUAGE DerivingVia                #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 import Test.Hspec
 import Test.QuickCheck
