@@ -15,8 +15,8 @@
 -- [Usage :]
 --
 -- >>> import Data.Semigroup
--- >>> LSemidirect (Sum 1) (Product 2) <> LSemidirect (Sum (3 :: Int)) (Product (4 :: Int))
--- LSemidirect {lactee = Sum {getSum = 7}, lactor = Product {getProduct = 8}}
+-- >>> LPair (Sum 1) (Product 2) <> LPair (Sum (3 :: Int)) (Product (4 :: Int))
+-- LPair {lactee = Sum {getSum = 7}, lactor = Product {getProduct = 8}}
 --
 -- [Property checking :]
 --
@@ -25,7 +25,7 @@
 -- example, @'Sum' Int@ acting on itself is not a semigroup action by morphism
 -- and therefore the semidirect product is not associative :
 --
--- >>> LSemidirect (Sum 1) (Sum 2) <> LSemidirect (Sum (3 :: Int)) (Sum (4 :: Int))
+-- >>> LPair (Sum 1) (Sum 2) <> LPair (Sum (3 :: Int)) (Sum (4 :: Int))
 -- No instance for `LActDistrib (Sum Int) (Sum Int)'
 --   arising from a use of `<>'
 --
@@ -51,7 +51,7 @@ import Data.Act
 
 -- | A semi-direct product for a left action, where @s@ acts on @x@
 --
-data LSemidirect x s = LSemidirect
+data LSemidirect x s = LPair
   { lactee :: x -- ^ The value being acted on
   , lactor :: s -- ^ The acting element
   }
@@ -59,11 +59,11 @@ data LSemidirect x s = LSemidirect
 
 instance LActSgMorph x s
   => Semigroup (LSemidirect x s) where
-  ~(LSemidirect x s) <> ~(LSemidirect x' s') =
-    LSemidirect  (x <> (s <>$ x')) (s <> s')
+  ~(LPair x s) <> ~(LPair x' s') =
+    LPair  (x <> (s <>$ x')) (s <> s')
 
 instance LActMnMorph x s => Monoid (LSemidirect x s) where
-  mempty = LSemidirect mempty mempty
+  mempty = LPair mempty mempty
 
 instance Functor (LSemidirect x) where
   fmap f a = a {lactor = f (lactor a)}
@@ -82,22 +82,22 @@ lforget a =a {lactor = mempty}
 
 -- |  Make a semidirect pair whose actee is @mempty@.
 lembedActor :: Monoid x => s -> LSemidirect x s
-lembedActor s = LSemidirect mempty s
+lembedActor s = LPair mempty s
 
 -- |  Make a semidirect pair whose actor is @mempty@.
 lembedActee :: Monoid s => x -> LSemidirect x s
-lembedActee x = LSemidirect x mempty
+lembedActee x = LPair x mempty
 
 -- | Converts a pair into a semidirect product element.
 lfromPair :: (x,s) -> LSemidirect x s
-lfromPair (x,s) = LSemidirect x s
+lfromPair (x,s) = LPair x s
 
 
 ------------------------------------------------------------------------------
 
 -- |  A semidirect product for a right action, where @s@ acts on @x@
 --
-data RSemidirect x s = RSemidirect
+data RSemidirect x s = RPair
   { ractee :: x -- ^ The value being acted on
   , ractor :: s -- ^ The acting element
   }
@@ -105,11 +105,11 @@ data RSemidirect x s = RSemidirect
 
 instance RActSgMorph x s
   => Semigroup (RSemidirect x s) where
-  ~(RSemidirect x s) <> ~(RSemidirect x' s') =
-    RSemidirect  (x <> (x' $<> s)) (s <> s')
+  ~(RPair x s) <> ~(RPair x' s') =
+    RPair  (x <> (x' $<> s)) (s <> s')
 
 instance RActMnMorph x s => Monoid (RSemidirect x s) where
-  mempty = RSemidirect mempty mempty
+  mempty = RPair mempty mempty
 
 instance Functor (RSemidirect x) where
   fmap f a = a {ractor = f (ractor a)}
@@ -128,12 +128,12 @@ rforget a = a {ractor = mempty}
 
 -- |  Make a semidirect pair whose actee is @mempty@.
 rembedActor :: Monoid x => s -> RSemidirect x s
-rembedActor s = RSemidirect mempty s
+rembedActor s = RPair mempty s
 
 -- |  Make a semidirect pair whose actor element is @mempty@ .
 rembedActee :: Monoid s => x -> RSemidirect x s
-rembedActee x = RSemidirect x mempty
+rembedActee x = RPair x mempty
 
 -- | Convert a pair into a semidirect product element
 rfromPair :: (x,s) -> RSemidirect x s
-rfromPair (x,s) = RSemidirect x s
+rfromPair (x,s) = RPair x s

@@ -1,5 +1,5 @@
 name:                 lr-acts
-version:              0.0.1
+version:              0.1
 github:               "AliceRixte/lr-acts"
 license:              BSD-3-Clause
 author:               "Alice Rixte"
@@ -35,6 +35,7 @@ ghc-options:
 tested-with:
   GHC == 9.8.2
    || == 9.10.2
+   || == 9.10.3
 
 library:
   ghc-options:

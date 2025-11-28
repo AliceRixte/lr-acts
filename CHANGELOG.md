@@ -20,7 +20,8 @@ and this project adheres to the
 
 - Fix deriving mechanism for Torsor instances
 
-## 0.0.2 - unreleased
+## 0.1 - unreleased
 
+- Rename LSemidirect and RSemidirect constructors to LPair and RPair
 - Instances for ActCyclic x ()
 - Add LDefault and RDefault newtypes for ActCyclic

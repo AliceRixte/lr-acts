@@ -28,44 +28,44 @@ main = hspec $ do
       describe "Lazy" $ do
         it "Product on Sum Semigroup" $ property $
           \x s y t ->
-            Lazy.LSemidirect (Sum (x :: Int)) (Product (s :: Int))
-            <> Lazy.LSemidirect (Sum y) (Product t)
+            Lazy.LPair (Sum (x :: Int)) (Product (s :: Int))
+            <> Lazy.LPair (Sum y) (Product t)
             `shouldBe`
-            Lazy.LSemidirect (Sum (x + s*y)) (Product (s*t))
+            Lazy.LPair (Sum (x + s*y)) (Product (s*t))
         it "Product on Sum Monoid" $
           mempty `shouldBe`
-            Lazy.LSemidirect (mempty :: Sum Int) (mempty :: Product Int)
+            Lazy.LPair (mempty :: Sum Int) (mempty :: Product Int)
       describe "Strict" $ do
         it "Product on Sum Semigroup" $ property $
           \x s y t ->
-            Strict.LSemidirect (Sum (x :: Int)) (Product (s :: Int))
-            <> Strict.LSemidirect (Sum y) (Product t)
+            Strict.LPair (Sum (x :: Int)) (Product (s :: Int))
+            <> Strict.LPair (Sum y) (Product t)
             `shouldBe`
-            Strict.LSemidirect (Sum (x + s*y)) (Product (s*t))
+            Strict.LPair (Sum (x + s*y)) (Product (s*t))
         it "Product on Sum Monoid" $
           mempty `shouldBe`
-            Strict.LSemidirect (mempty :: Sum Int) (mempty :: Product Int)
+            Strict.LPair (mempty :: Sum Int) (mempty :: Product Int)
     describe "RSemidirect" $ do
       describe "Lazy" $ do
         it "Product on Sum Semigroup" $ property $
           \x s y t ->
-            Lazy.RSemidirect (Sum (x :: Int)) (Product (s :: Int))
-            <> Lazy.RSemidirect (Sum y) (Product t)
+            Lazy.RPair (Sum (x :: Int)) (Product (s :: Int))
+            <> Lazy.RPair (Sum y) (Product t)
             `shouldBe`
-            Lazy.RSemidirect (Sum (x + s*y)) (Product (s*t))
+            Lazy.RPair (Sum (x + s*y)) (Product (s*t))
         it "Product on Sum Monoid" $
           mempty `shouldBe`
-            Lazy.RSemidirect (mempty :: Sum Int) (mempty :: Product Int)
+            Lazy.RPair (mempty :: Sum Int) (mempty :: Product Int)
       describe "Strict" $ do
         it "Product on Sum Semigroup" $ property $
           \x s y t ->
-            Strict.RSemidirect (Sum (x :: Int)) (Product (s :: Int))
-            <> Strict.RSemidirect (Sum y) (Product t)
+            Strict.RPair (Sum (x :: Int)) (Product (s :: Int))
+            <> Strict.RPair (Sum y) (Product t)
             `shouldBe`
-            Strict.RSemidirect (Sum (x + s*y)) (Product (s*t))
+            Strict.RPair (Sum (x + s*y)) (Product (s*t))
         it "Product on Sum Monoid" $
           mempty `shouldBe`
-            Strict.RSemidirect (mempty :: Sum Int) (mempty :: Product Int)
+            Strict.RPair (mempty :: Sum Int) (mempty :: Product Int)
 
   describe "Action" $ do
     describe "ActSelf" $ do
