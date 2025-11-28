@@ -1,6 +1,6 @@
 # lr-acts
 
-[![Haskell](https://img.shields.io/badge/language-Haskell-orange.svg)](https://haskell.org) [![BSD3 License](https://img.shields.io/badge/license-BSD3-blue.svg)](https://github.com/AliceRixte/lr-acts/LICENSE) [![Hackage](https://img.shields.io/hackage/v/lr-acts.svg)](https://hackage.haskell.org/package/lr-acts) [![Nightly](https://www.stackage.org/package/lr-acts/badge/nightly)](https://www.stackage.org/nightly/package/lr-acts) [![LTS](https://www.stackage.org/package/lr-acts/badge/lts)](https://www.stackage.org/lts/package/lr-acts) 
+[![Haskell](https://img.shields.io/badge/language-Haskell-orange.svg)](https://haskell.org) [![BSD3 License](https://img.shields.io/badge/license-BSD3-blue.svg)](https://github.com/AliceRixte/lr-acts/LICENSE) [![Hackage](https://img.shields.io/hackage/v/lr-acts.svg)](https://hackage.haskell.org/package/lr-acts) [![Nightly](https://www.stackage.org/package/lr-acts/badge/nightly)](https://www.stackage.org/nightly/package/lr-acts) [![LTS](https://www.stackage.org/package/lr-acts/badge/lts)](https://www.stackage.org/lts/package/lr-acts)
 
 ## Features
 
@@ -75,14 +75,14 @@ This fine-grained hierarchy allows to check for associativity and existence of n
 
 ``` haskell
 >>> import Data.Semigroup
->>> LSemidirect (Sum 1) (Product 2) <> LSemidirect (Sum (3 :: Int)) (Product (4 :: Int))
-LSemidirect {lactee = Sum {getSum = 7}, lactor = Product {getProduct = 8}}
+>>> LPair (Sum 1) (Product 2) <> LPair (Sum (3 :: Int)) (Product (4 :: Int))
+LPair {lactee = Sum {getSum = 7}, lactor = Product {getProduct = 8}}
 ```
 
 GHC will complain when using a semigroup action that is not distributive :
 
 ```haskell
->>> LSemidirect (Sum 1) (Sum 2) <> LSemidirect (Sum (3 :: Int)) (Sum (4 :: Int))
+>>> LPair (Sum 1) (Sum 2) <> LPair (Sum (3 :: Int)) (Sum (4 :: Int))
 No instance for `LActDistrib (Sum Int) (Sum Int)'
   arising from a use of `<>'
 ```
