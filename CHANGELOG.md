@@ -16,12 +16,22 @@ and this project adheres to the
 - Torsors
 - Semidirect products
 
-## 0.0.1 - 2024-05-24
+## 0.0.1 - 2025-05-24
 
 - Fix deriving mechanism for Torsor instances
 
-## 0.1 - unreleased
+## 0.1 - 2025-11-29
 
 - Rename LSemidirect and RSemidirect constructors to LPair and RPair
 - Instances for ActCyclic x ()
 - Add LDefault and RDefault newtypes for ActCyclic
+
+## 0.1.1 - 2025-12-01
+
+- Fix benchmark
+
+## 0.2 - Unreleased
+
+- Rename :
+  - unactCoerce -> unactSelf'
+  - unactId -> unactTrivial
