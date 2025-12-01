@@ -20,12 +20,12 @@ import GHC.Real
 
 stimesLSemiLazy :: Int -> Sum Int
 stimesLSemiLazy n =   L.lactee $ stimes n
-    (L.LSemidirect (Sum 1) (Product 2) :: L.LSemidirect (Sum Int) (Product Int))
+    (L.LPair (Sum 1) (Product 2) :: L.LSemidirect (Sum Int) (Product Int))
 
 stimesLSemiStrict :: Int -> Sum Int
 stimesLSemiStrict n =
   S.lactee $ stimes n
-    (S.LSemidirect (Sum 1) (Product 2) :: S.LSemidirect (Sum Int) (Product Int))
+    (S.LPair (Sum 1) (Product 2) :: S.LSemidirect (Sum Int) (Product Int))
 
 sumProduct :: Int  -> (Sum Int, Product Int)
 sumProduct n = stimes n (Sum 1, Product 2)
