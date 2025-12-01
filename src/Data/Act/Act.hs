@@ -330,7 +330,7 @@ instance Monoid s => RActMn s (ActSelf s)
 -- >>> Duration 2 <>$ Seconds 3
 -- Seconds 5.0
 --
-newtype ActSelf' x = ActSelf' {unactCoerce :: x}
+newtype ActSelf' x = ActSelf' {unactSelf' :: x}
   deriving stock (Show, Eq)
   deriving newtype (Semigroup, Monoid, Group)
 
@@ -358,7 +358,7 @@ instance (Coercible x s, Monoid s) => RActMn x (ActSelf' s)
 -- >>> ActTrivial "Hello !" <>$ "Hi !"
 -- " Hi !"
 
-newtype ActTrivial x = ActTrivial  {unactId :: x}
+newtype ActTrivial x = ActTrivial  {unactTrivial :: x}
   deriving stock (Show, Eq)
   deriving newtype (Semigroup, Monoid, Group)
 
