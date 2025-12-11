@@ -51,7 +51,7 @@ newtype Duration = Duration Seconds
 
 newtype Durations = Durations [Duration]
   deriving (LAct Seconds, RAct Seconds) via (ActFold [Duration])
-  -- derives LAct Second Durations
+  -- derives LAct Second [Durations]
 
 ```
 
