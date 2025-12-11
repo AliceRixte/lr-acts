@@ -10,7 +10,7 @@
 --
 -- Semidirect products for left and right actions.
 --
--- For a strict version, see @'Data.Semidirect.Strict'@.
+-- For a strict version, see "Data.Semidirect.Strict".
 --
 -- [Usage :]
 --

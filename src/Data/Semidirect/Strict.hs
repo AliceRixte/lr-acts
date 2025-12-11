@@ -10,7 +10,7 @@
 --
 -- Semidirect products for left and right actions.
 --
--- For a lazy version, see @'Data.Semidirect.Lazy'@.
+-- For a lazy version, see "Data.Semidirect.Lazy".
 --
 -- [Usage :]
 --
