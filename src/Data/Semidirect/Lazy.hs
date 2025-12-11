@@ -32,18 +32,26 @@
 -----------------------------------------------------------------------------
 
 module Data.Semidirect.Lazy
-       ( LSemidirect (..)
-       , lerase
-       , lforget
-       , lembedActee
-       , lembedActor
-       , lfromPair
-        , RSemidirect (..)
-        , rerase
-        , rforget
-        , rembedActee
-        , rembedActor
-        , rfromPair
+      ( LSemidirect (..)
+      , lvacate
+      , lerase
+      , lreset
+      , lforget
+      , lfromActor
+      , lembedActee
+      , lfromActee
+      , lembedActor
+      , lfromPair
+      , RSemidirect (..)
+      , rreset
+      , rerase
+      , rvacate
+      , rforget
+      , rfromActee
+      , rembedActee
+      , rfromActor
+      , rembedActor
+      , rfromPair
        ) where
 
 import Data.Bifunctor
@@ -72,21 +80,47 @@ instance Bifunctor LSemidirect where
   first f a = a {lactee = f (lactee a)}
   second = fmap
 
+
+-- | Replace the actee with @mempty@.
+lvacate :: Monoid x => LSemidirect x s -> LSemidirect x s
+lvacate a = a {lactee = mempty}
+
 -- |  Erases the actee (i.e. replace it with @mempty@).
 lerase :: Monoid x => LSemidirect x s -> LSemidirect x s
 lerase a = a {lactee = mempty}
+
+{-# DEPRECATED lerase "Use lvacate instead." #-}
+
+-- | Replace the actor with @mempty@.
+lreset :: Monoid s => LSemidirect x s -> LSemidirect x s
+lreset a = a {lactor = mempty}
 
 -- |  Forget the actor (i.e. replace it with @mempty@).
 lforget :: Monoid s => LSemidirect x s -> LSemidirect x s
 lforget a =a {lactor = mempty}
 
+{-# DEPRECATED lforget "Use lreset instead." #-}
+
+
+-- |  Make a semidirect pair whose actee is @mempty@.
+lfromActor :: Monoid x => s -> LSemidirect x s
+lfromActor s = LPair mempty s
+
 -- |  Make a semidirect pair whose actee is @mempty@.
 lembedActor :: Monoid x => s -> LSemidirect x s
 lembedActor s = LPair mempty s
 
+{-# DEPRECATED lembedActor "Use lfromActor instead." #-}
+
+-- |  Make a semidirect pair whose actor is @mempty@.
+lfromActee :: Monoid s => x -> LSemidirect x s
+lfromActee x = LPair x mempty
+
 -- |  Make a semidirect pair whose actor is @mempty@.
 lembedActee :: Monoid s => x -> LSemidirect x s
 lembedActee x = LPair x mempty
+
+{-# DEPRECATED lembedActee "Use lfromActee instead." #-}
 
 -- | Converts a pair into a semidirect product element.
 lfromPair :: (x,s) -> LSemidirect x s
@@ -118,21 +152,45 @@ instance Bifunctor RSemidirect where
   first f a = a {ractee = f (ractee a)}
   second = fmap
 
+-- | Replace the actee with @mempty@.
+rvacate :: Monoid x => RSemidirect x s -> RSemidirect x s
+rvacate a = a {ractee = mempty}
+
 -- |  Erase the actee (i.e. replace it with @mempty@).
 rerase :: Monoid x => RSemidirect x s -> RSemidirect x s
 rerase a = a {ractee = mempty}
+
+{-# DEPRECATED rerase "Use rvacate instead." #-}
+
+-- | Replace the actor with @mempty@.
+rreset :: Monoid s => RSemidirect x s -> RSemidirect x s
+rreset a = a {ractor = mempty}
 
 -- |  Forget the actor (i.e. replace it with @mempty@).
 rforget :: Monoid s => RSemidirect x s -> RSemidirect x s
 rforget a = a {ractor = mempty}
 
+{-# DEPRECATED rforget "Use rreset instead." #-}
+
+-- |  Make a semidirect pair whose actee is @mempty@.
+rfromActor :: Monoid x => s -> RSemidirect x s
+rfromActor s = RPair mempty s
+
 -- |  Make a semidirect pair whose actee is @mempty@.
 rembedActor :: Monoid x => s -> RSemidirect x s
 rembedActor s = RPair mempty s
 
+{-# DEPRECATED rembedActor "Use rfromActor instead." #-}
+
+-- |  Make a semidirect pair whose actor is @mempty@.
+rfromActee :: Monoid s => x -> RSemidirect x s
+rfromActee x = RPair x mempty
+
 -- |  Make a semidirect pair whose actor element is @mempty@ .
 rembedActee :: Monoid s => x -> RSemidirect x s
 rembedActee x = RPair x mempty
+
+{-# DEPRECATED rembedActee "Use rfromActee instead." #-}
 
 -- | Convert a pair into a semidirect product element
 rfromPair :: (x,s) -> RSemidirect x s

@@ -30,8 +30,12 @@ and this project adheres to the
 
 - Fix benchmark
 
-## 0.2 - Unreleased
+## 0.2 - 2025-12-11
 
 - Rename :
+  - embedActor -> fromActor
+  - embedActee -> fromActee
+  - erase -> vacate
+  - forget -> reset
   - unactCoerce -> unactSelf'
   - unactId -> unactTrivial
