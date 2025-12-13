@@ -16,10 +16,12 @@
 ------------------------------------------------------------------------
 
 module Data.Monoid.Put.Lazy
-  ( PutFirst(..)
-  , PutLast(..)
-  , LPutFirst(..)
-  , RPutLast(..)
+  ( PutFirst (..)
+  , PutLast (..)
+  , LPutFirst (..)
+  , RPutLast (..)
+  , LState (..)
+  , RState (..)
   ) where
 
 import Data.Act
@@ -180,3 +182,24 @@ instance RAct x s => RAct x (RPutLast x s) where
 
 instance RActSg x s => RActSg x (RPutLast x s)
 instance RActMn x s => RActMn x (RPutLast x s)
+
+
+data LState s =
+    LModify (s -> s)  -- ^ Modify the current state
+  | LPut s            -- ^ Replace the current state
+
+instance Semigroup (LState s) where
+  LPut s <> _ = LPut s
+  LModify f <> LModify g = LModify (f . g)
+  LModify f <> LPut s = LPut (f s)
+
+data RState s =
+    RModify (s -> s)  -- ^ Modify the current state
+  | RPut s            -- ^ Replace the current state
+
+instance Semigroup (RState s) where
+  _ <> RPut s = RPut s
+  RModify f <> RModify g = RModify (g . f)
+  RPut s <> RModify f = RPut (f s)
+
+
