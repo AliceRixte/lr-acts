@@ -54,6 +54,7 @@ module Data.Semidirect.Strict
       , rfromPair
       ) where
 
+import Data.Default
 import Data.Bifunctor
 import Data.Act
 
@@ -64,6 +65,9 @@ data LSemidirect x s = LPair
   , lactor :: !s -- ^ The acting element
   }
   deriving (Show, Read, Eq)
+
+instance (Default x, Default s) => Default (LSemidirect x s) where
+  def = LPair def def
 
 instance LActSgMorph x s
   => Semigroup (LSemidirect x s) where
@@ -134,6 +138,9 @@ data RSemidirect x s = RPair
   , ractor :: !s -- ^ The acting element
   }
   deriving (Show, Read, Eq)
+
+instance (Default x, Default s) => Default (RSemidirect x s) where
+  def = RPair def def
 
 instance RActSgMorph x s
   => Semigroup (RSemidirect x s) where

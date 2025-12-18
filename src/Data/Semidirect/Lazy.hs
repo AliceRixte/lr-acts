@@ -56,6 +56,7 @@ module Data.Semidirect.Lazy
 
 import Data.Bifunctor
 import Data.Act
+import Data.Default
 
 -- | A semi-direct product for a left action, where @s@ acts on @x@
 --
@@ -72,6 +73,9 @@ instance LActSgMorph x s
 
 instance LActMnMorph x s => Monoid (LSemidirect x s) where
   mempty = LPair mempty mempty
+
+instance (Default x, Default s) => Default (LSemidirect x s) where
+  def = LPair def def
 
 instance Functor (LSemidirect x) where
   fmap f a = a {lactor = f (lactor a)}
@@ -136,6 +140,9 @@ data RSemidirect x s = RPair
   , ractor :: s -- ^ The acting element
   }
   deriving (Show, Read, Eq)
+
+instance (Default x, Default s) => Default (RSemidirect x s) where
+  def = RPair def def
 
 instance RActSgMorph x s
   => Semigroup (RSemidirect x s) where
