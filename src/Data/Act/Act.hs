@@ -79,12 +79,14 @@ module Data.Act.Act
   , ActTrivial (..)
 ) where
 
+import GHC.TypeLits
 import Data.Semigroup as Sg
 import Data.Monoid as Mn
 import Data.Group
 import Data.Functor.Identity
 import Data.Foldable
 import Data.Coerce
+import Data.Complex
 
 import Witch
 import Witch.Orphans ()
@@ -699,39 +701,56 @@ instance RActMn x (Mn.Last x)
 
 
 -- | Monoid action
-instance (From s x, Num x) => LAct x (Sum s) where
-  Sum s <>$ x = from s + x
+-- instance {-# INCOHERENT #-} (x ~ (),  TypeError (Text "coucou")) => LAct x (Sum s) where
+--   Sum s <>$ x = fromIntegral s + x
+--   {-# INLINE (<>$) #-}
+
+-- instance {-# INCOHERENT #-} (Integral s, Num x, Num s) => LActSg x (Sum s)
+-- instance {-# INCOHERENT #-} (Integral s, Num x, Num s) => LActMn x (Sum s)
+
+
+-- -- | Monoid action
+-- instance {-# INCOHERENT #-} (Integral s, Num x) => RAct x (Sum s) where
+--   x $<> Sum s = x + fromIntegral s
+--   {-# INLINE ($<>) #-}
+
+-- instance {-# INCOHERENT #-} (Integral s, Num x, Num s) => RActSg x (Sum s)
+-- instance {-# INCOHERENT #-} (Integral s, Num x, Num s) => RActMn x (Sum s)
+
+instance RealFloat x => LAct (Complex x) (Sum x) where
+  Sum s <>$ x = (s :+ 0) + x
   {-# INLINE (<>$) #-}
 
-instance (From s x, Num x, Num s) => LActSg x (Sum s) where
-instance (From s x, Num x, Num s) => LActMn x (Sum s) where
-
--- There cannot be an instance of From Int Float, because Ints that are too big
--- cannot be represented as Floats. However, there is indeed an action of Sum
--- Int on Float.
-instance {-# OVERLAPPING #-} LAct Float (Sum Int) where
+instance Integral s => LAct Int (Sum s) where
   Sum s <>$ x = fromIntegral s + x
   {-# INLINE (<>$) #-}
 
-instance {-# OVERLAPPING #-} LAct Double (Sum Int) where
-  Sum s <>$ x = fromIntegral s + x
+instance  Integral s => LAct Integer (Sum s) where
+  Sum s <>$ x = toInteger s + x
   {-# INLINE (<>$) #-}
 
--- | Monoid action
-instance (From s x, Num x) => RAct x (Sum s) where
-  x $<> Sum s = x + from s
-  {-# INLINE ($<>) #-}
+instance Integral s => LAct Bool (Sum s) where
+  Sum s <>$ x = odd s || x
+  {-# INLINE (<>$) #-}
 
-instance {-# OVERLAPPING #-} RAct Float (Sum Int) where
-  x $<> Sum s = x + fromIntegral s
-  {-# INLINE ($<>) #-}
+instance Integral s => LActSg Bool (Sum s)
+instance Integral s => LActMn Bool (Sum s)
 
-instance {-# OVERLAPPING #-} RAct Double (Sum Int) where
-  x $<> Sum s = x + fromIntegral s
-  {-# INLINE ($<>) #-}
+instance Real s => LAct Float (Sum s) where
+  Sum s <>$ x = realToFrac s + x
+  {-# INLINE (<>$) #-}
 
-instance (From s x, Num x, Num s) => RActSg x (Sum s)
-instance (From s x, Num x, Num s) => RActMn x (Sum s)
+instance Integral s => LActSg Float (Sum s)
+instance Integral s => LActMn Float (Sum s)
+
+instance Real s => LAct Double (Sum s) where
+  Sum s <>$ x = realToFrac s + x
+  {-# INLINE (<>$) #-}
+
+
+aha = Sum 3 <>$ (3 :: Int)
+
+
 
 ---------------------------------- Product -----------------------------------
 

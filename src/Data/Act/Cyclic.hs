@@ -535,15 +535,15 @@ instance (Coercible x s, Monoid s) => RActCyclic x (ActSelf' s) where
 --   lshift = Sum
 --   {-# INLINE lshift #-}
 
-instance (Eq x, Num x) => RActGen x (Sum x)
+-- instance (Eq x, Num x) => RActGen x (Sum x)
 
-instance Num x => RActCyclic x (Sum x) where
-  rorigin' = 0
-  {-# INLINE rorigin' #-}
-  rshift = Sum
-  {-# INLINE rshift #-}
+-- instance Num x => RActCyclic x (Sum x) where
+--   rorigin' = 0
+--   {-# INLINE rorigin' #-}
+--   rshift = Sum
+--   {-# INLINE rshift #-}
 
--- Product --
+-- -- Product --
 
 instance (Eq x, Num x) => LActGen x (Product x)
 

@@ -78,7 +78,7 @@ import Data.Act.Act
 
 -- ff :: LAct Int (Sum a) => a -> [Int]
 ff c = c +$ [1]
-ff' c = c +$ (1 :: Double, 2 :: Float) --[1 :: Int]
+ff' c = c +$$ (1 :: Double, 2 :: Float) --[1 :: Int]
 
 data Dig = Once | Indefinitely
 
@@ -113,8 +113,8 @@ type ActShallower d s = ActDig' (Shallower d) s
 type ActShallow s = ActDig Once s
 type ActDeep s = ActDig Indefinitely s
 
-(+$) :: LAct x (ActShallow (Sum s)) => s -> x -> x
-s +$ x = ActShallow (Sum s) <>$ x
+(+$) :: LAct x (Sum s) => s -> x -> x
+s +$ x = Sum s <>$ x
 
 (+$&) :: LAct x (ActDeep (Sum s)) => s -> x -> x
 (+$&) s = (ActDeep (Sum s) <>$)
