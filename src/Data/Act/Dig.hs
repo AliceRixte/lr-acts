@@ -57,33 +57,24 @@
 --------------------------------------------------------------------------------
 
 module Data.Act.Dig
-  ( Dig (..)
-  , ActDig (..)
-  , ActDeep (..)
+  ( ActShallow
+  , pattern ActShallow
+  , ActDeep
   , pattern ActDeep
+  , ActShallower
+  , pattern ActShallower
   , (+$)
   , (+$$)
   , (+$$$)
   , (+$&)
 ) where
 
-import GHC.TypeLits
-
-import Data.Semigroup as Sg
 import Data.Monoid
 import Data.Group
-import Data.Functor.Identity
-import Data.Foldable
-import Data.Coerce
-
-
-import Witch
-import Witch.Orphans ()
 
 import Data.Act.Act
 
-(+$) :: LAct x (ActShallow (Sum s)) => s -> x -> x
-s +$ x = ActShallow (Sum s) <>$ x
+
 
 -- ff :: LAct Int (Sum a) => a -> [Int]
 ff c = c +$ [1]
@@ -122,6 +113,9 @@ type ActShallower d s = ActDig' (Shallower d) s
 type ActShallow s = ActDig Once s
 type ActDeep s = ActDig Indefinitely s
 
+(+$) :: LAct x (ActShallow (Sum s)) => s -> x -> x
+s +$ x = ActShallow (Sum s) <>$ x
+
 (+$&) :: LAct x (ActDeep (Sum s)) => s -> x -> x
 (+$&) s = (ActDeep (Sum s) <>$)
 
@@ -131,17 +125,26 @@ type ActDeep s = ActDig Indefinitely s
 (+$$$) :: LAct x (ActShallow (ActShallow (Sum s))) => s -> x -> x
 (+$$$) s = (ActShallow (ActShallow (Sum s)) <>$)
 
+
 pattern ActDig :: forall d s. s -> ActDig d s
-pattern ActDig s = ActDig' @(Just d) s
+pattern ActDig s = ActDig' s
+
+{-# COMPLETE ActDig #-}
 
 pattern ActShallow :: s -> ActShallow s
 pattern ActShallow s = ActDig' @(Just Once) s
 
-pattern ActShallower :: forall d s. s -> ActShallower (d :: Dig) s
-pattern ActShallower s = ActDig' @(Shallower d) s
+{-# COMPLETE ActShallow #-}
+
+pattern ActShallower :: forall d s. s -> ActShallower d s
+pattern ActShallower s = ActDig' s
+
+{-# COMPLETE ActShallower #-}
 
 pattern ActDeep :: s -> ActDeep s
 pattern ActDeep s = ActDig @Indefinitely s
+
+{-# COMPLETE ActDeep #-}
 
 
 instance LAct x s => LAct x (ActDig' 'Nothing s) where

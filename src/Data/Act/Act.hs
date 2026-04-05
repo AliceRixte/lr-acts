@@ -1,8 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-{-# LANGUAGE PatternSynonyms #-}
-{-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE TypeFamilyDependencies #-}
-
 --------------------------------------------------------------------------------
 -- |
 --
@@ -83,8 +78,6 @@ module Data.Act.Act
   , ActFold' (..)
   , ActTrivial (..)
 ) where
-
-import GHC.TypeLits
 
 import Data.Semigroup as Sg
 import Data.Monoid as Mn
@@ -639,78 +632,6 @@ instance LActSg x (Endo x)
 instance LActMn x (Endo x)
 
 -- | Monoid action
-instance (From s x, Num x) => LAct x (Sum s) where
-  Sum s <>$ x = from s + x
-  {-# INLINE (<>$) #-}
-
-instance (From s x, Num x, Num s) => LActSg x (Sum s) where
-instance (From s x, Num x, Num s) => LActMn x (Sum s) where
-
--- There cannot be an instance of From Int Float, because Ints that are too big
--- cannot be represented as Floats. However, there is indeed an action of Sum
--- Int on Float.
-instance {-# OVERLAPPING #-} LAct Float (Sum Int) where
-  Sum s <>$ x = fromIntegral s + x
-  {-# INLINE (<>$) #-}
-
-instance {-# OVERLAPPING #-} LAct Double (Sum Int) where
-  Sum s <>$ x = fromIntegral s + x
-  {-# INLINE (<>$) #-}
-
--- | Monoid action
-instance (From s x, Num x) => RAct x (Sum s) where
-  x $<> Sum s = x + from s
-  {-# INLINE ($<>) #-}
-
-instance {-# OVERLAPPING #-} RAct Float (Sum Int) where
-  x $<> Sum s = x + fromIntegral s
-  {-# INLINE ($<>) #-}
-
-instance {-# OVERLAPPING #-} RAct Double (Sum Int) where
-  x $<> Sum s = x + fromIntegral s
-  {-# INLINE ($<>) #-}
-
-instance (From s x, Num x, Num s) => RActSg x (Sum s)
-instance (From s x, Num x, Num s) => RActMn x (Sum s)
-
--- | Monoid action, action by morphism when @x@ is @Sum x@
-instance (From s x, Num x) => LAct x (Product s) where
-  Product s <>$ x = from s * x
-  {-# INLINE (<>$) #-}
-
-instance (From s x, Num x, Num s) => LActSg x (Product s)
-instance (From s x, Num x, Num s) => LActMn x (Product s)
-instance (From s (Sum x), Num x) => LActDistrib (Sum x) (Product s)
-instance (From s (Sum x), Num x) => LActNeutral (Sum x) (Product s)
-
-instance {-# OVERLAPPING #-} LAct Float (Product Int) where
-  Product s <>$ x = fromIntegral s * x
-  {-# INLINE (<>$) #-}
-
-instance {-# OVERLAPPING #-} LAct Double (Product Int) where
-  Product s <>$ x = fromIntegral s * x
-  {-# INLINE (<>$) #-}
-
--- | Monoid action, action by morphism when @x@ is @Sum x@
-instance (From s x, Num x) => RAct x (Product s) where
-  x $<> Product s = x * from s
-  {-# INLINE ($<>) #-}
-
-instance (From s x, Num x, Num s) => RActSg x (Product s)
-instance (From s x, Num x, Num s) => RActMn x (Product s)
-instance (From s (Sum x), Num x) => RActDistrib (Sum x) (Product s)
-instance (From s (Sum x), Num x) => RActNeutral (Sum x) (Product s)
-
-instance {-# OVERLAPPING #-} RAct Float (Product Int) where
-  x $<> Product s = x * fromIntegral s
-  {-# INLINE ($<>) #-}
-
-instance {-# OVERLAPPING #-} RAct Double (Product Int) where
-  x $<> Product s = x * fromIntegral s
-  {-# INLINE ($<>) #-}
-
-
--- | Monoid action
 instance LAct Bool Any where
   (<>$) s = coerce (s <>)
   {-# INLINE (<>$) #-}
@@ -773,3 +694,82 @@ instance RAct x (Mn.Last x) where
 
 instance RActSg x (Mn.Last x)
 instance RActMn x (Mn.Last x)
+
+------------------------------------ Sum -------------------------------------
+
+
+-- | Monoid action
+instance (From s x, Num x) => LAct x (Sum s) where
+  Sum s <>$ x = from s + x
+  {-# INLINE (<>$) #-}
+
+instance (From s x, Num x, Num s) => LActSg x (Sum s) where
+instance (From s x, Num x, Num s) => LActMn x (Sum s) where
+
+-- There cannot be an instance of From Int Float, because Ints that are too big
+-- cannot be represented as Floats. However, there is indeed an action of Sum
+-- Int on Float.
+instance {-# OVERLAPPING #-} LAct Float (Sum Int) where
+  Sum s <>$ x = fromIntegral s + x
+  {-# INLINE (<>$) #-}
+
+instance {-# OVERLAPPING #-} LAct Double (Sum Int) where
+  Sum s <>$ x = fromIntegral s + x
+  {-# INLINE (<>$) #-}
+
+-- | Monoid action
+instance (From s x, Num x) => RAct x (Sum s) where
+  x $<> Sum s = x + from s
+  {-# INLINE ($<>) #-}
+
+instance {-# OVERLAPPING #-} RAct Float (Sum Int) where
+  x $<> Sum s = x + fromIntegral s
+  {-# INLINE ($<>) #-}
+
+instance {-# OVERLAPPING #-} RAct Double (Sum Int) where
+  x $<> Sum s = x + fromIntegral s
+  {-# INLINE ($<>) #-}
+
+instance (From s x, Num x, Num s) => RActSg x (Sum s)
+instance (From s x, Num x, Num s) => RActMn x (Sum s)
+
+---------------------------------- Product -----------------------------------
+
+-- | Monoid action, action by morphism when @x@ is @Sum x@
+instance (From s x, Num x) => LAct x (Product s) where
+  Product s <>$ x = from s * x
+  {-# INLINE (<>$) #-}
+
+instance (From s x, Num x, Num s) => LActSg x (Product s)
+instance (From s x, Num x, Num s) => LActMn x (Product s)
+instance (From s (Sum x), Num x) => LActDistrib (Sum x) (Product s)
+instance (From s (Sum x), Num x) => LActNeutral (Sum x) (Product s)
+
+instance {-# OVERLAPPING #-} LAct Float (Product Int) where
+  Product s <>$ x = fromIntegral s * x
+  {-# INLINE (<>$) #-}
+
+instance {-# OVERLAPPING #-} LAct Double (Product Int) where
+  Product s <>$ x = fromIntegral s * x
+  {-# INLINE (<>$) #-}
+
+-- | Monoid action, action by morphism when @x@ is @Sum x@
+instance (From s x, Num x) => RAct x (Product s) where
+  x $<> Product s = x * from s
+  {-# INLINE ($<>) #-}
+
+instance (From s x, Num x, Num s) => RActSg x (Product s)
+instance (From s x, Num x, Num s) => RActMn x (Product s)
+instance (From s (Sum x), Num x) => RActDistrib (Sum x) (Product s)
+instance (From s (Sum x), Num x) => RActNeutral (Sum x) (Product s)
+
+instance {-# OVERLAPPING #-} RAct Float (Product Int) where
+  x $<> Product s = x * fromIntegral s
+  {-# INLINE ($<>) #-}
+
+instance {-# OVERLAPPING #-} RAct Double (Product Int) where
+  x $<> Product s = x * fromIntegral s
+  {-# INLINE ($<>) #-}
+
+
+
