@@ -1,6 +1,6 @@
 cabal-version: 2.2
 
--- This file has been generated from package.yaml by hpack version 0.38.1.
+-- This file has been generated from package.yaml by hpack version 0.39.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -33,23 +33,29 @@ library
       Data.Act
       Data.Act.Act
       Data.Act.Cyclic
+      Data.Act.Dig
       Data.Act.Torsor
       Data.Monoid.Put
       Data.Monoid.Put.Lazy
       Data.Semidirect
       Data.Semidirect.Lazy
       Data.Semidirect.Strict
+      Witch.Orphans
   other-modules:
       Paths_lr_acts
   autogen-modules:
       Paths_lr_acts
   hs-source-dirs:
       src
+  default-extensions:
+      DerivingVia
+      TypeFamilies
   ghc-options: -Wall -threaded -fprint-potential-instances
   build-depends:
       base >=4.18 && <5
     , data-default >=0.7 && <0.9
     , groups ==0.5.*
+    , witch >=1.3 && <1.3.0.9
   default-language: GHC2024
 
 test-suite lr-acts-test
@@ -61,6 +67,9 @@ test-suite lr-acts-test
       Paths_lr_acts
   hs-source-dirs:
       test
+  default-extensions:
+      DerivingVia
+      TypeFamilies
   ghc-options: -Wall -threaded
   build-depends:
       QuickCheck >=2.14.3
@@ -69,6 +78,7 @@ test-suite lr-acts-test
     , groups ==0.5.*
     , hspec >=2.11
     , lr-acts
+    , witch >=1.3 && <1.3.0.9
   default-language: GHC2024
 
 benchmark lr-acts-bench
@@ -80,6 +90,9 @@ benchmark lr-acts-bench
       Paths_lr_acts
   hs-source-dirs:
       benchmark
+  default-extensions:
+      DerivingVia
+      TypeFamilies
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.18 && <5
@@ -87,4 +100,5 @@ benchmark lr-acts-bench
     , data-default >=0.7 && <0.9
     , groups ==0.5.*
     , lr-acts
+    , witch >=1.3 && <1.3.0.9
   default-language: GHC2024

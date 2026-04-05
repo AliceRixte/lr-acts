@@ -1,3 +1,8 @@
+{-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE TypeFamilyDependencies #-}
+
 --------------------------------------------------------------------------------
 -- |
 --
@@ -54,6 +59,14 @@
 module Data.Act.Act
   ( -- * Left actions
     LAct (..)
+  , Dig (..)
+  , ActDig (..)
+  , ActDeep (..)
+  , pattern ActDeep
+  , (+$)
+  , (+$$)
+  , (+$$$)
+  , (+$&)
   , LActSg
   , LActMn
   , LActGp
@@ -76,8 +89,11 @@ module Data.Act.Act
   , ActMap (..)
   , ActFold (..)
   , ActFold' (..)
+  , ActShallow (..)
   , ActTrivial (..)
 ) where
+
+import GHC.TypeLits
 
 import Data.Semigroup as Sg
 import Data.Monoid as Mn
@@ -86,6 +102,8 @@ import Data.Functor.Identity
 import Data.Foldable
 import Data.Coerce
 
+import Witch
+import Witch.Orphans ()
 
 -- | A left action of a set @s@ on another set @x@ is a function that maps
 -- elements of @s@ to functions on @x@.
@@ -416,11 +434,10 @@ instance (RActMn x s, Functor f) => RActMn (f x) (ActMap s)
 instance RAct x s => RActDistrib [x] (ActMap s)
 instance RAct x s => RActNeutral [x] (ActMap s)
 
--- | Lifting an a container as an action using @'foldr'@ (for /left/ actions) or
--- @'foldl'@ (for /right/ actions). For a strict version, use @'ActFold''@.
+-- | Make every element of a foldable structure act on some element.
 --
--- A left action @(<>$)@ can be seen as an operator for the @'foldr'@ function,
--- and a allowing to lift any action to some @'Foldable'@ container.
+-- >> ActFold f <>$ x == foldr (<>$) x f
+-- >> x $<> ActFold f = foldl ($<>) x f
 --
 -- >> ActFold [Sum (1 :: Int), Sum 2, Sum 3] <>$ (4 :: Int)
 -- >  10
@@ -441,11 +458,7 @@ instance (Foldable f, RAct x s) => RAct x (ActFold (f s)) where
   x $<> ActFold f = foldl ($<>) x f
   {-# INLINE ($<>) #-}
 
--- | Lifting an a container as an action using @'fold'r'@ (for /left/ actions)
--- or @'foldl''@ (for /right/ actions). For a lazy version, use @'ActFold'@.
---
--- A left action @(<>$)@ can be seen as an operator for the @'foldr'@ function,
--- and a allowing to lift any action to some @'Foldable'@ container.
+-- | Strict version of @'ActFold'@.
 --
 -- >>> ActFold' [Sum (1 :: Int), Sum 2, Sum 3] <>$ (4 :: Int)
 -- 10
@@ -466,6 +479,109 @@ instance (Foldable f, RAct x s) => RAct x (ActFold' (f s)) where
   x $<> ActFold' f = foldl' ($<>) x f
   {-# INLINE ($<>) #-}
 
+(+$) :: LAct x (ActShallow (Sum s)) => s -> x -> x
+s +$ x = ActShallow (Sum s) <>$ x
+
+-- ff :: LAct Int (Sum a) => a -> [Int]
+ff c = c +$ [1]
+ff' c = c +$ (1 :: Double, 2 :: Float) --[1 :: Int]
+
+data Dig = Once | Indefinitely
+
+type family Shallower' d = r | r -> d  where
+  Shallower' (Just Once)  = Nothing
+  Shallower' (Just Indefinitely)  = Just Indefinitely
+
+type Shallower d = Shallower' (Just d)
+
+-- | Acts on every element of a structure.
+--
+-- Typically :
+--
+-- * it acts on sum types by acting on their content
+-- * it acts on product types by acting on each component and then combining the
+--   results using the semigroup operation of @s@
+--
+-- Contrarily to @'ActDeep@, this action will only try to deconstruct @x@ once.
+--
+-- >>> ActShallow (Sum 1) <>$ [1, 2, 3 ]
+-- [2,3,4]
+--
+-- >>> ActShallow (Sum (1 :: Int)) <>$ (1 :: Int, 2.5 :: Float, pi :: Double)
+-- (2,3.5,4.141592653589793)
+--
+newtype ActDig' (d :: Maybe Dig) s = ActDig' {unactDig :: s}
+  deriving stock (Show, Eq)
+  deriving newtype (Semigroup, Monoid, Group)
+
+type ActDig d s = ActDig' (Just d) s
+type ActShallower d s = ActDig' (Shallower d) s
+type ActShallow s = ActDig Once s
+type ActDeep s = ActDig Indefinitely s
+
+(+$&) :: LAct x (ActDeep (Sum s)) => s -> x -> x
+(+$&) s = (ActDeep (Sum s) <>$)
+
+(+$$) :: LAct x (ActShallow (Sum s)) => s -> x -> x
+(+$$) s = (ActShallow (Sum s) <>$)
+
+(+$$$) :: LAct x (ActShallow (ActShallow (Sum s))) => s -> x -> x
+(+$$$) s = (ActShallow (ActShallow (Sum s)) <>$)
+
+pattern ActDig :: forall d s. s -> ActDig d s
+pattern ActDig s = ActDig' @(Just d) s
+
+pattern ActShallow :: s -> ActShallow s
+pattern ActShallow s = ActDig' @(Just Once) s
+
+pattern ActShallower :: forall d s. s -> ActShallower (d :: Dig) s
+pattern ActShallower s = ActDig' @(Shallower d) s
+
+pattern ActDeep :: s -> ActDeep s
+pattern ActDeep s = ActDig @Indefinitely s
+
+
+instance LAct x s => LAct x (ActDig' 'Nothing s) where
+  ActDig' s <>$ x = s <>$ x
+  {-# INLINE (<>$) #-}
+
+instance {-# INCOHERENT #-}
+  LAct x s
+  => LAct x (ActDig d s) where
+  ActDig s <>$ x =  s <>$ x
+  {-# INLINE (<>$) #-}
+
+instance
+  ( LAct x0 (ActShallower d s)
+  , LAct x1 (ActShallower d s)
+  )
+  => LAct (Either x0 x1) (ActDig d s) where
+  ActDig s <>$ Left  x0 = Left  $ ActShallower @d s <>$ x0
+  ActDig s <>$ Right x1 = Right $ ActShallower @d s <>$ x1
+  {-# INLINE (<>$) #-}
+
+instance
+  ( LAct x (ActShallower d s))
+  => LAct [x] (ActDig d s) where
+  ActDig s <>$ x = map (ActShallower @d s <>$) x
+  {-# INLINE (<>$) #-}
+
+instance
+  ( LAct x0 (ActShallower d s)
+  , LAct x1 (ActShallower d s)
+  )
+  => LAct (x0, x1) (ActDig d s) where
+  ActDig s <>$ (x0, x1) = (ActShallower @d s <>$ x0, ActShallower @d s <>$ x1)
+  {-# INLINE (<>$) #-}
+
+instance
+  ( LAct x0 (ActShallower d s)
+  , LAct x1 (ActShallower d s)
+  , LAct x2 (ActShallower d s)
+  )
+  => LAct (x0, x1, x2) (ActDig d s) where
+  ActDig s <>$ (x0, x1, x2) = (ActShallower @d s <>$ x0, ActShallower @d s <>$ x1, ActShallower @d s <>$ x2)
+  {-# INLINE (<>$) #-}
 
 ---------------------------------- Instances -----------------------------------
 
@@ -635,89 +751,76 @@ instance LActSg x (Endo x)
 instance LActMn x (Endo x)
 
 -- | Monoid action
-instance Num x => LAct x (Sum x) where
-  (<>$) s = coerce (s <>)
+instance (From s x, Num x) => LAct x (Sum s) where
+  Sum s <>$ x = from s + x
   {-# INLINE (<>$) #-}
 
-instance Num x => LActSg x (Sum x)
-instance Num x => LActMn x (Sum x)
+instance (From s x, Num x, Num s) => LActSg x (Sum s) where
+instance (From s x, Num x, Num s) => LActMn x (Sum s) where
 
-
--- | Monoid action
-instance Num x => RAct x (Sum x) where
-  x $<> s = coerce $ coerce x <> s
-  {-# INLINE ($<>) #-}
-
-instance Num x => RActSg x (Sum x)
-instance Num x => RActMn x (Sum x)
-
--- | Monoid action
-instance Num x => LAct x (Product x) where
-  (<>$) s = coerce (s <>)
+-- There cannot be an instance of From Int Float, because Ints that are too big
+-- cannot be represented as Floats. However, there is indeed an action of Sum
+-- Int on Float.
+instance {-# OVERLAPPING #-} LAct Float (Sum Int) where
+  Sum s <>$ x = fromIntegral s + x
   {-# INLINE (<>$) #-}
 
-instance Num x => LActSg x (Product x)
-instance Num x => LActMn x (Product x)
-
--- | Monoid action
-instance Num x => RAct x (Product x) where
-  x $<> s = coerce $ coerce x <> s
-  {-# INLINE ($<>) #-}
-
-instance Num x => RActSg x (Product x)
-instance Num x => RActMn x (Product x)
-
--- | Monoid action
-instance {-# OVERLAPPING #-} Num x => LAct (Sum x) (Sum x) where
-  (<>$) = (<>)
+instance {-# OVERLAPPING #-} LAct Double (Sum Int) where
+  Sum s <>$ x = fromIntegral s + x
   {-# INLINE (<>$) #-}
 
-instance {-# OVERLAPPING #-} Num x => LActSg (Sum x) (Sum x)
-instance {-# OVERLAPPING #-} Num x => LActMn (Sum x) (Sum x)
-
 -- | Monoid action
-instance {-# OVERLAPPING #-} Num x => RAct (Sum x) (Sum x) where
-  ($<>) = (<>)
+instance (From s x, Num x) => RAct x (Sum s) where
+  x $<> Sum s = x + from s
   {-# INLINE ($<>) #-}
 
-instance {-# OVERLAPPING #-} Num x => RActSg (Sum x) (Sum x)
-instance {-# OVERLAPPING #-} Num x => RActMn (Sum x) (Sum x)
+instance {-# OVERLAPPING #-} RAct Float (Sum Int) where
+  x $<> Sum s = x + fromIntegral s
+  {-# INLINE ($<>) #-}
 
--- | Monoid action
-instance {-# OVERLAPPING #-}  Num x => LAct (Product x) (Product x) where
-  (<>$) s = coerce (s <>)
+instance {-# OVERLAPPING #-} RAct Double (Sum Int) where
+  x $<> Sum s = x + fromIntegral s
+  {-# INLINE ($<>) #-}
+
+instance (From s x, Num x, Num s) => RActSg x (Sum s)
+instance (From s x, Num x, Num s) => RActMn x (Sum s)
+
+-- | Monoid action, action by morphism when @x@ is @Sum x@
+instance (From s x, Num x) => LAct x (Product s) where
+  Product s <>$ x = from s * x
   {-# INLINE (<>$) #-}
 
-instance {-# OVERLAPPING #-} Num x => LActSg (Product x) (Product x)
-instance {-# OVERLAPPING #-} Num x => LActMn (Product x) (Product x)
+instance (From s x, Num x, Num s) => LActSg x (Product s)
+instance (From s x, Num x, Num s) => LActMn x (Product s)
+instance (From s (Sum x), Num x) => LActDistrib (Sum x) (Product s)
+instance (From s (Sum x), Num x) => LActNeutral (Sum x) (Product s)
 
--- | Monoid action
-instance {-# OVERLAPPING #-} Num x => RAct (Product x) (Product x) where
-  ($<>) = (<>)
-  {-# INLINE ($<>) #-}
-
-instance {-# OVERLAPPING #-} Num x => RActSg (Product x) (Product x)
-instance {-# OVERLAPPING #-} Num x => RActMn (Product x) (Product x)
-
--- | Action by morphism of monoids
-instance Num x => LAct (Sum x) (Product x) where
-  (<>$) s = coerce (s <>)
+instance {-# OVERLAPPING #-} LAct Float (Product Int) where
+  Product s <>$ x = fromIntegral s * x
   {-# INLINE (<>$) #-}
 
-instance Num x => LActSg (Sum x) (Product x)
-instance Num x => LActMn (Sum x) (Product x)
-instance Num x => LActDistrib (Sum x) (Product x)
-instance Num x => LActNeutral (Sum x) (Product x)
+instance {-# OVERLAPPING #-} LAct Double (Product Int) where
+  Product s <>$ x = fromIntegral s * x
+  {-# INLINE (<>$) #-}
 
--- | Action by morphism of monoids
-instance Num x => RAct (Sum x) (Product x) where
-  x $<> s = coerce $ coerce x <> s
+-- | Monoid action, action by morphism when @x@ is @Sum x@
+instance (From s x, Num x) => RAct x (Product s) where
+  x $<> Product s = x * from s
   {-# INLINE ($<>) #-}
 
-instance Num x => RActSg (Sum x) (Product x)
-instance Num x => RActMn (Sum x) (Product x)
-instance Num x => RActDistrib (Sum x) (Product x)
-instance Num x => RActNeutral (Sum x) (Product x)
+instance (From s x, Num x, Num s) => RActSg x (Product s)
+instance (From s x, Num x, Num s) => RActMn x (Product s)
+instance (From s (Sum x), Num x) => RActDistrib (Sum x) (Product s)
+instance (From s (Sum x), Num x) => RActNeutral (Sum x) (Product s)
+
+instance {-# OVERLAPPING #-} RAct Float (Product Int) where
+  x $<> Product s = x * fromIntegral s
+  {-# INLINE ($<>) #-}
+
+instance {-# OVERLAPPING #-} RAct Double (Product Int) where
+  x $<> Product s = x * fromIntegral s
+  {-# INLINE ($<>) #-}
+
 
 -- | Monoid action
 instance LAct Bool Any where

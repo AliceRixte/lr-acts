@@ -527,13 +527,13 @@ instance (Coercible x s, Monoid s) => RActCyclic x (ActSelf' s) where
 
 -- Sum --
 
-instance (Eq x, Num x) => LActGen x (Sum x)
+-- instance (Eq x, Num x) => LActGen x (Sum x)
 
-instance Num x => LActCyclic x (Sum x) where
-  lorigin' = 0
-  {-# INLINE lorigin' #-}
-  lshift = Sum
-  {-# INLINE lshift #-}
+-- instance Num x => LActCyclic x (Sum x) where
+--   lorigin' = 0
+--   {-# INLINE lorigin' #-}
+--   lshift = Sum
+--   {-# INLINE lshift #-}
 
 instance (Eq x, Num x) => RActGen x (Sum x)
 
