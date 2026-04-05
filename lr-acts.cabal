@@ -35,8 +35,6 @@ library
       Data.Act.Cyclic
       Data.Act.Dig
       Data.Act.Torsor
-      Data.Monoid.Put
-      Data.Monoid.Put.Lazy
       Data.Semidirect
       Data.Semidirect.Lazy
       Data.Semidirect.Strict
