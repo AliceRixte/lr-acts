@@ -127,13 +127,13 @@ instance RTorsor x g => LTorsor x (Dual g) where
   ldiff y x = Dual (rdiff y x)
   {-# INLINE ldiff #-}
 
--- instance Num x => LTorsor x (Sum x) where
---   ldiff y x = Sum (y - x)
---   {-# INLINE ldiff #-}
+instance Num x => LTorsor x (Sum x) where
+  ldiff y x = Sum (y - x)
+  {-# INLINE ldiff #-}
 
--- instance Fractional x => LTorsor x (Product x) where
---   ldiff y x = Product (y / x)
---   {-# INLINE ldiff #-}
+instance Fractional x => LTorsor x (Product x) where
+  ldiff y x = Product (y / x)
+  {-# INLINE ldiff #-}
 
 
 
@@ -197,11 +197,11 @@ instance LTorsor x g => RTorsor x (Dual g) where
   rdiff y x = Dual (ldiff y x)
   {-# INLINE rdiff #-}
 
--- instance Num x => RTorsor x (Sum x) where
---   rdiff y x = Sum (y - x)
---   {-# INLINE rdiff #-}
+instance Num x => RTorsor x (Sum x) where
+  rdiff y x = Sum (y - x)
+  {-# INLINE rdiff #-}
 
--- instance Fractional x => RTorsor x (Product x) where
---   rdiff y x = Product (y / x)
---   {-# INLINE rdiff #-}
+instance Fractional x => RTorsor x (Product x) where
+  rdiff y x = Product (y / x)
+  {-# INLINE rdiff #-}
 

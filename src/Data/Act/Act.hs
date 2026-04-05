@@ -700,22 +700,20 @@ instance RActMn x (Mn.Last x)
 ------------------------------------ Sum -------------------------------------
 
 
--- | Monoid action
--- instance {-# INCOHERENT #-} (x ~ (),  TypeError (Text "coucou")) => LAct x (Sum s) where
---   Sum s <>$ x = fromIntegral s + x
---   {-# INLINE (<>$) #-}
+instance {-# INCOHERENT #-} Num x => LAct x (Sum x) where
+  Sum s <>$ x = s + x
+  {-# INLINE (<>$) #-}
 
--- instance {-# INCOHERENT #-} (Integral s, Num x, Num s) => LActSg x (Sum s)
--- instance {-# INCOHERENT #-} (Integral s, Num x, Num s) => LActMn x (Sum s)
+instance {-# INCOHERENT #-} Num x => LActSg x (Sum x)
+instance {-# INCOHERENT #-} Num x => LActMn x (Sum x)
 
+instance {-# INCOHERENT #-} Num x => RAct x (Sum x) where
+  x $<> Sum s = x + s
+  {-# INLINE ($<>) #-}
 
--- -- | Monoid action
--- instance {-# INCOHERENT #-} (Integral s, Num x) => RAct x (Sum s) where
---   x $<> Sum s = x + fromIntegral s
---   {-# INLINE ($<>) #-}
+instance {-# INCOHERENT #-} Num x => RActSg x (Sum x)
+instance {-# INCOHERENT #-} Num x => RActMn x (Sum x)
 
--- instance {-# INCOHERENT #-} (Integral s, Num x, Num s) => RActSg x (Sum s)
--- instance {-# INCOHERENT #-} (Integral s, Num x, Num s) => RActMn x (Sum s)
 
 instance RealFloat x => LAct (Complex x) (Sum x) where
   Sum s <>$ x = (s :+ 0) + x
@@ -748,47 +746,39 @@ instance Real s => LAct Double (Sum s) where
   {-# INLINE (<>$) #-}
 
 
-aha = Sum 3 <>$ (3 :: Int)
-
-
-
 ---------------------------------- Product -----------------------------------
 
 -- | Monoid action, action by morphism when @x@ is @Sum x@
-instance (From s x, Num x) => LAct x (Product s) where
-  Product s <>$ x = from s * x
+instance {-# INCOHERENT #-} Num x => LAct x (Product x) where
+  Product s <>$ x = s * x
   {-# INLINE (<>$) #-}
 
-instance (From s x, Num x, Num s) => LActSg x (Product s)
-instance (From s x, Num x, Num s) => LActMn x (Product s)
-instance (From s (Sum x), Num x) => LActDistrib (Sum x) (Product s)
-instance (From s (Sum x), Num x) => LActNeutral (Sum x) (Product s)
+instance {-# INCOHERENT #-} Num x => LActSg x (Product x)
+instance {-# INCOHERENT #-} Num x => LActMn x (Product x)
 
-instance {-# OVERLAPPING #-} LAct Float (Product Int) where
-  Product s <>$ x = fromIntegral s * x
+instance LAct x (Product s) => LAct (Sum x) (Product s) where
+  s <>$ Sum x = Sum (s <>$ x)
   {-# INLINE (<>$) #-}
 
-instance {-# OVERLAPPING #-} LAct Double (Product Int) where
-  Product s <>$ x = fromIntegral s * x
-  {-# INLINE (<>$) #-}
+instance LActSg x (Product s) => LActSg (Sum x) (Product s)
+instance LActMn x (Product s) => LActMn (Sum x) (Product s)
+instance (Num x, LAct x (Product s)) => LActDistrib (Sum x) (Product s)
+instance (Num x, LAct x (Product s)) => LActNeutral (Sum x) (Product s)
 
 -- | Monoid action, action by morphism when @x@ is @Sum x@
-instance (From s x, Num x) => RAct x (Product s) where
-  x $<> Product s = x * from s
+instance {-# INCOHERENT #-} Num x => RAct x (Product x) where
+  x $<> Product s = x * s
   {-# INLINE ($<>) #-}
 
-instance (From s x, Num x, Num s) => RActSg x (Product s)
-instance (From s x, Num x, Num s) => RActMn x (Product s)
-instance (From s (Sum x), Num x) => RActDistrib (Sum x) (Product s)
-instance (From s (Sum x), Num x) => RActNeutral (Sum x) (Product s)
+instance {-# INCOHERENT #-} Num x => RActSg x (Product x)
+instance {-# INCOHERENT #-} Num x => RActMn x (Product x)
 
-instance {-# OVERLAPPING #-} RAct Float (Product Int) where
-  x $<> Product s = x * fromIntegral s
+instance RAct x (Product s) => RAct (Sum x) (Product s) where
+  Sum x $<> s = Sum (x $<> s)
   {-# INLINE ($<>) #-}
 
-instance {-# OVERLAPPING #-} RAct Double (Product Int) where
-  x $<> Product s = x * fromIntegral s
-  {-# INLINE ($<>) #-}
-
-
+instance RActSg x (Product s) => RActSg (Sum x) (Product s)
+instance RActMn x (Product s) => RActMn (Sum x) (Product s)
+instance (Num x, RAct x (Product s)) => RActDistrib (Sum x) (Product s)
+instance (Num x, RAct x (Product s)) => RActNeutral (Sum x) (Product s)
 
