@@ -39,3 +39,9 @@ and this project adheres to the
   - forget -> reset
   - unactCoerce -> unactSelf'
   - unactId -> unactTrivial
+
+## 1.0 - unreleased
+
+### Breaking changes
+
+- Change the precedence of `(<>$)` and `($<>)` from 5 to 6 to match the precedence of `(<>)`

@@ -133,7 +133,7 @@ class LAct x s where
   lact :: s -> x -> x
   lact = (<>$)
   {-# INLINE lact #-}
-  infixr 5 `lact`
+  infixr 6 `lact`
 
   -- | Infix synonym or @'lact'@
   --
@@ -142,7 +142,7 @@ class LAct x s where
   (<>$) :: s -> x -> x
   (<>$) = lact
   {-# INLINE (<>$) #-}
-  infixr 5 <>$
+  infixr 6 <>$
 
 -- | A left semigroup action
 --
@@ -214,7 +214,7 @@ class RAct x s where
   ract :: x -> s -> x
   ract = ($<>)
   {-# INLINE ract #-}
-  infixl 5 `ract`
+  infixl 6 `ract`
 
   -- | Infix synonym or @'ract'@
   --
@@ -224,7 +224,7 @@ class RAct x s where
   ($<>) :: x -> s -> x
   ($<>) = ract
   {-# INLINE ($<>) #-}
-  infixl 5 $<>
+  infixl 6 $<>
 
 
 -- | A right semigroup action
